@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Calendario de Turnos Profesional</title>
+    
+    <!-- Enlace al Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Meta tags para PWA en iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Turnos Pro">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -252,12 +261,22 @@
         function exportToCSV() { let csvContent = "Fecha,Dia,Tipo,Turno\n"; const daysInMonth = new Date(currentDisplayYear, currentDisplayMonth + 1, 0).getDate(); const refDate = new Date(activeProfile.referenceDate); for (let day = 1; day <= daysInMonth; day++) { const date = new Date(currentDisplayYear, currentDisplayMonth, day); const dateStr = date.toISOString().slice(0, 10); const dayName = dayNamesFull[date.getDay()]; const diffDays = Math.round((date.getTime() - refDate.getTime()) / (1000 * 60 * 60 * 24)); const cyclePos = ((diffDays % 8) + 8) % 8; const type = (cyclePos === 0 || cyclePos === 1) ? "Libre" : "Trabajo"; let shiftName = ""; if (type === "Trabajo") { const shiftId = activeProfile.assignedShifts[dateStr]; if (shiftId) { const shift = activeProfile.shifts.find(s => s.id === shiftId); shiftName = shift ? `"${shift.name}"` : ""; } } csvContent += `${dateStr},${dayName},${type},${shiftName}\n`; } const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' }); downloadFile(`horario_${activeProfile.name}_${currentDisplayYear}-${currentDisplayMonth+1}.csv`, blob, 'text/csv;charset=utf-8;'); showToast('Exportado a Excel (CSV).'); }
         async function exportToPDF() { const btn = document.getElementById('pdf-export-btn'); const originalText = btn.textContent; btn.textContent = 'Generando...'; btn.disabled = true; const calendarEl = document.getElementById('calendar-to-print'); const bgColor = document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff'; try { const canvas = await html2canvas(calendarEl, { scale: 3, backgroundColor: bgColor }); const imgData = canvas.toDataURL('image/png'); const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' }); const pdfWidth = pdf.internal.pageSize.getWidth(); const margin = 40; const contentWidth = pdfWidth - margin * 2; const ratio = canvas.height / canvas.width; const contentHeight = contentWidth * ratio; pdf.setFontSize(20); pdf.text(`${activeProfile.name} - ${monthNames[currentDisplayMonth]} ${currentDisplayYear}`, pdfWidth / 2, margin, { align: 'center' }); pdf.addImage(imgData, 'PNG', margin, margin + 20, contentWidth, contentHeight); pdf.save(`horario_${activeProfile.name}_${currentDisplayYear}-${currentDisplayMonth+1}.pdf`); showToast('Exportado a PDF.'); } catch (error) { console.error("Error al exportar a PDF:", error); showToast('Error al generar el PDF.', 'error'); } finally { btn.textContent = originalText; btn.disabled = false; } }
         function addToGoogleCalendar() { if (!selectedDateForAssignment) return; const shiftId = activeProfile.assignedShifts[selectedDateForAssignment]; if (!shiftId) { showToast("Primero asigna un turno a este día.", "error"); return; } const shift = activeProfile.shifts.find(s => s.id === shiftId); const times = shift.name.match(/(\d{2}):(\d{2})[ -]+(\d{2}):(\d{2})/); if (!times) { showToast("Formato de turno no válido para exportar.", "error"); return; } const [, startHour, startMin, endHour, endMin] = times.map(t => parseInt(t)); let startDate = new Date(`${selectedDateForAssignment}T${times[1]}:${times[2]}:00`); let endDate = new Date(startDate); endDate.setHours(endHour, endMin, 0, 0); if (endDate < startDate) { endDate.setDate(endDate.getDate() + 1); } const toGoogleFormat = (date) => date.toISOString().replace(/-|:|\.\d{3}/g, ''); const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(shift.name)}&dates=${toGoogleFormat(startDate)}/${toGoogleFormat(endDate)}&details=Turno asignado desde el planificador.`; window.open(url, '_blank'); }
-        
         function openImportModal() { const modal = document.getElementById('importShiftModal'); const optionsContainer = document.getElementById('import-profile-options'); optionsContainer.innerHTML = ''; const otherProfiles = appData.profiles.filter(p => p.id !== activeProfile.id); if (otherProfiles.length === 0) { optionsContainer.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400">No hay otros perfiles desde donde importar.</p>`; } else { otherProfiles.forEach(profile => { const button = document.createElement('button'); button.textContent = `Importar de "${profile.name}"`; button.className = 'w-full font-bold py-2 px-4 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200'; button.onclick = () => importShiftsFromProfile(profile.id); optionsContainer.appendChild(button); }); } modal.classList.remove('hidden'); modal.classList.add('flex'); }
         function closeImportModal(event) { const modal = document.getElementById('importShiftModal'); if (!event || event.target === modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); } }
         function importShiftsFromProfile(sourceProfileId) { const sourceProfile = appData.profiles.find(p => p.id === sourceProfileId); if (!sourceProfile) { showToast('Perfil de origen no encontrado.', 'error'); return; } sourceProfile.shifts.forEach(sourceShift => { const newShift = { id: crypto.randomUUID(), name: sourceShift.name, color: sourceShift.color }; activeProfile.shifts.push(newShift); }); saveToLocalStorage(); refreshAllUI(); closeImportModal(); showToast(`Turnos importados desde "${sourceProfile.name}".`, 'success'); }
 
-        window.onload = () => { populateSelectors(); loadFromLocalStorage(); refreshAllUI(); };
+        window.onload = () => { 
+            populateSelectors(); 
+            loadFromLocalStorage(); 
+            refreshAllUI();
+            
+            // Registrar el Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                .then(registration => console.log('Service Worker registrado con éxito:', registration))
+                .catch(error => console.log('Error al registrar el Service Worker:', error));
+            }
+        };
     </script>
 </body>
 </html>
