@@ -8,10 +8,11 @@
     <!-- Enlace al Web App Manifest -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- Meta tags para PWA en iOS -->
+    <!-- Meta tags para PWA en iOS y color de la barra de estado -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Turnos Pro">
+    <meta name="theme-color" content="#4f46e5">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -269,10 +270,8 @@
             populateSelectors(); 
             loadFromLocalStorage(); 
             refreshAllUI();
-            
-            // Registrar el Service Worker
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('sw.js')
                 .then(registration => console.log('Service Worker registrado con éxito:', registration))
                 .catch(error => console.log('Error al registrar el Service Worker:', error));
             }
