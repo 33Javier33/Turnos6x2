@@ -1,12 +1,10 @@
-const CACHE_NAME = 'calendario-turnos-v3'; // Incrementada la versión para forzar actualización
+const CACHE_NAME = 'calendario-turnos-v4'; // Versión actualizada
 
 const urlsToCache = [
-  '.', // index.html
+  '.', // Representa el index.html
   'manifest.json',
-  'icons/icon-192x192.svg',
-  'icons/icon-512x512.svg',
-  'icons/icon-192x192.png', // Opcional si los conviertes
-  'icons/icon-512x512.png', // Opcional si los conviertes
+  'icons/icon-192x192.png',
+  'icons/icon-512x512.png',
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
@@ -17,15 +15,8 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Cache abierto y listo para guardar archivos.');
-        // Usamos addAll para asegurar que si falla uno, falla toda la instalación.
-        return Promise.all(
-          urlsToCache.map(url => {
-            return cache.add(url).catch(err => {
-              console.warn(`No se pudo cachear: ${url}`, err);
-            });
-          })
-        );
+        console.log('Caché abierto. Guardando archivos para uso sin conexión.');
+        return cache.addAll(urlsToCache);
       })
   );
 });
