@@ -22,18 +22,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; touch-action: manipulation; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; /* Gap reducido */ }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
         .day-cell {
             aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            border-radius: 0.5rem; font-size: 1.1rem; /* Aumentado */
-            font-weight: 500; transition: all 0.2s ease-in-out; line-height: 1.2;
+            border-radius: 0.5rem; font-size: 0.9rem; /* Reajustado a un tamaño equilibrado */
+            font-weight: 500; transition: all 0.2s ease-in-out; line-height: 1.1;
         }
         .day-name { font-weight: bold; text-align: center; }
-        .free-day { font-weight: bold; } /* Color se aplica dinámicamente */
+        .free-day { font-weight: bold; }
         .assigned-shift { font-weight: bold; }
-        .assigned-shift .day-number { font-size: 1.3em; }
-        .assigned-shift .shift-name-label { font-size: 0.8em; margin-top: 3px; word-break: break-all; }
-        .today { position: relative; ring-width: 3px; --tw-ring-color: #4f46e5; box-shadow: 0 0 0 3px var(--tw-ring-color); }
+        .assigned-shift .day-number { font-size: 1.2em; }
+        .assigned-shift .shift-name-label { font-size: 0.75em; margin-top: 2px; }
+        .today { position: relative; ring-width: 2px; --tw-ring-color: #4f46e5; box-shadow: 0 0 0 2px var(--tw-ring-color); }
         .dark .today { --tw-ring-color: #818cf8; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .calendar-container { animation: fadeIn 0.5s ease-out forwards; }
@@ -120,12 +120,12 @@
     </aside>
     <div id="menu-overlay" class="fixed inset-0 z-40 hidden bg-black/50 backdrop-blur-sm" onclick="closeMenu()"></div>
 
-    <main id="main-content" class="py-2 px-1 sm:px-4">
-        <div class="w-full max-w-full mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2 sm:p-4 md:p-6">
-            <header class="flex items-center justify-between text-center mb-4 sm:mb-8 border-b pb-4 border-gray-200 dark:border-gray-700">
+    <main id="main-content" class="py-10 px-4">
+        <div class="w-full max-w-7xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8">
+            <header class="flex items-center justify-between text-center mb-8 border-b pb-4 border-gray-200 dark:border-gray-700">
                 <button onclick="openMenu()" class="p-2 rounded-full hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"><svg class="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
                 <div class="flex flex-col items-center">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">Calendario de Turnos</h1>
+                    <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Calendario de Turnos</h1>
                     <p id="current-user-name" class="text-indigo-600 dark:text-indigo-400 font-semibold mt-1"></p>
                     <p id="countdown-container" class="text-sm text-gray-500 dark:text-gray-400 mt-2"></p>
                 </div>
@@ -134,7 +134,7 @@
             <div id="calendar-view">
                 <div class="flex items-center justify-between mb-4">
                     <button onclick="navigateMonth(-1)" class="p-2 rounded-full hover:bg-gray-200 active:bg-gray-300 dark:hover:bg-gray-700 dark:active:bg-gray-600"><svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
-                    <div class="flex items-center gap-2 sm:gap-4">
+                    <div class="flex items-center gap-4">
                         <select id="displayMonth" onchange="jumpToDate()" class="border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"></select>
                         <select id="displayYear" onchange="jumpToDate()" class="border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"></select>
                     </div>
@@ -217,7 +217,7 @@
         function handleDragLeave(e) { if (e.relatedTarget && e.currentTarget.contains(e.relatedTarget)) return; document.querySelectorAll('.drop-zone').forEach(zone => zone.remove()); }
         function getDragAfterElement(container, y) { const draggableElements = [...container.querySelectorAll('.draggable-item:not(.dragging)')]; return draggableElements.find(child => y < child.getBoundingClientRect().top + child.getBoundingClientRect().height / 2); }
         function handleDrop(e) { if (!dragEnabled) return; const draggingElement = document.querySelector('.dragging'); if (!draggingElement) return; e.preventDefault(); document.querySelectorAll('.drop-zone').forEach(zone => zone.remove()); const draggedShiftId = e.dataTransfer?.getData('text/plain') || draggingElement.dataset.shiftId; const list = document.getElementById('shift-list'); const clientY = e.clientY ?? e.changedTouches?.[0].clientY; if (clientY === undefined) { handleDragEnd(); return; } const afterElement = getDragAfterElement(list, clientY); const shifts = activeProfile.shifts; const draggedIndex = shifts.findIndex(s => s.id === draggedShiftId); const [draggedShift] = shifts.splice(draggedIndex, 1); if (afterElement) { const afterElementId = afterElement.dataset.shiftId; const dropIndex = shifts.findIndex(s => s.id === afterElementId); shifts.splice(dropIndex, 0, draggedShift); } else { shifts.push(draggedShift); } saveToLocalStorage(); renderShiftManager(); }
-        
+
         function updateFreeDayColor(color) { activeProfile.freeDayColor = color; saveToLocalStorage(); renderCurrentCalendar(); }
         function updateConfigControls() { const refDate = new Date(activeProfile.referenceDate); document.getElementById('referenceDate').value = refDate.toISOString().split('T')[0]; document.getElementById('freeDayColorInput').value = activeProfile.freeDayColor || '#16a34a'; }
         function openMenu() { document.getElementById('side-menu').classList.remove('-translate-x-full'); document.getElementById('menu-overlay').classList.remove('hidden'); }
