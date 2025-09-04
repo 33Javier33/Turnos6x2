@@ -203,13 +203,17 @@
 
     <div id="shiftModal" class="fixed inset-0 z-50 items-center justify-center hidden bg-gray-900/60 backdrop-blur-sm" onclick="closeModal(event)">
         <div id="modal-content" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-sm">
-            <h3 class="text-lg font-bold mb-2 text-center text-gray-900 dark:text-gray-100">Asignar Turno</h3>
+            <h3 class="text-lg font-bold mb-2 text-center text-gray-900 dark:text-gray-100">Gestionar Día</h3>
             <p id="modal-date" class="text-center text-gray-600 dark:text-gray-300 mb-4"></p>
-            <div id="modal-shift-options" class="space-y-2"></div>
-            <button onclick="removeShiftAssignment()" class="w-full mt-4 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold py-2 px-4 rounded-lg">Quitar Turno</button>
-            <button id="google-cal-btn" onclick="addToGoogleCalendar()" class="w-full mt-2 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg disabled:bg-gray-400 dark:disabled:bg-gray-600">Añadir a Google Calendar</button>
+            
+            <!-- Seccion de Turnos (se oculta en días libres) -->
+            <div id="modal-shift-section">
+                <div id="modal-shift-options" class="space-y-2"></div>
+                <button onclick="removeShiftAssignment()" class="w-full mt-4 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold py-2 px-4 rounded-lg">Quitar Turno</button>
+                <button id="google-cal-btn" onclick="addToGoogleCalendar()" class="w-full mt-2 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg disabled:bg-gray-400 dark:disabled:bg-gray-600">Añadir a Google Calendar</button>
+            </div>
 
-            <!-- Nueva sección de notas en el modal -->
+            <!-- Sección de notas (siempre visible) -->
             <div class="mt-4 border-t pt-4 border-gray-200 dark:border-gray-700">
                 <h4 class="text-md font-semibold mb-2 text-gray-800 dark:text-gray-200">Nota del Día</h4>
                 <textarea id="note-input" class="w-full h-24 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Añade una nota para este día..."></textarea>
@@ -315,6 +319,14 @@
             for (let i = 0; i < 90; i++) { const checkDate = new Date(today); checkDate.setDate(today.getDate() + i); const utcCheckDate = Date.UTC(checkDate.getUTCFullYear(), checkDate.getUTCMonth(), checkDate.getUTCDate()); const diffDays = Math.round((utcCheckDate - utcReferenceDate) / (1000 * 60 * 60 * 24)); const cyclePosition = ((diffDays % cycleLength) + cycleLength) % cycleLength; if (cyclePosition < restDays) { return i; } } return -1;
         }
         function updateCountdown() { const days = calculateDaysUntilNextFreeDay(); const container = document.getElementById('countdown-container'); if (days === 0) { container.textContent = '¡Hoy es tu día libre!'; } else if (days === 1) { container.textContent = 'Falta 1 día para tu próximo día libre.'; } else if (days > 1) { container.textContent = `Faltan ${days} días para tu próximo día libre.`; } else { container.textContent = 'Calculando próximo día libre...'; } }
+        
+        // --- LOGICA MODIFICADA PARA PERMITIR NOTAS EN DIAS LIBRES ---
+
+        function handleDayClick(dateString, isWorkDay) {
+            displayNoteForDate(dateString);
+            openModal(dateString, isWorkDay);
+        }
+
         function createMonthCalendar(year, month) {
             const firstDayOfMonth = new Date(year, month, 1); let gridStart = (firstDayOfMonth.getDay() + 6) % 7; const daysInMonth = new Date(year, month + 1, 0).getDate();
             let html = `<div id="calendar-to-print" class="calendar-container bg-white dark:bg-gray-800 rounded-lg p-2"><div class="calendar-grid mb-2">${dayNames.map(n=>`<div class="day-name text-gray-600 dark:text-gray-300">${n}</div>`).join('')}</div><div class="calendar-grid">`;
@@ -327,33 +339,66 @@
                 const utcCurrentDate = Date.UTC(year, month, day); const diffDays = Math.round((utcCurrentDate - utcReferenceDate) / (1000 * 60 * 60 * 24));
                 const cyclePosition = ((diffDays % cycleLength) + cycleLength) % cycleLength;
                 const dateString = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const isWorkDay = cyclePosition >= restDays;
+                
                 let dayClass = 'day-cell', style = '', content = `<span class="day-number">${day}</span>`;
                 const hasNote = activeProfile.notes && activeProfile.notes[dateString];
                 if (hasNote) { content += '<span class="note-indicator"></span>'; }
                 if (isToday) { dayClass += ' today'; }
-                
-                let onClickAction = `displayNoteForDate('${dateString}')`;
 
-                if (cyclePosition < restDays) {
-                    const freeDayColor = activeProfile.freeDayColor || '#16a34a'; const textColor = getTextColorForBg(freeDayColor); style = `style="background-color: ${freeDayColor}; color: ${textColor};"`; dayClass += ' free-day';
-                } else {
+                if (isWorkDay) {
                     dayClass += ' work-day bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 assignable hover:bg-gray-300 dark:hover:bg-gray-600';
-                    onClickAction += `; openModal('${dateString}')`; // Add modal opening for work days
                     const assignedShiftId = activeProfile.assignedShifts[dateString];
                     if (assignedShiftId) {
                         const shift = activeProfile.shifts.find(s => s.id === assignedShiftId);
                         if (shift) { const textColor = getTextColorForBg(shift.color); style = `style="background-color: ${shift.color}; color: ${textColor};"`; dayClass += ' assigned-shift'; content += `<span class="shift-name-label">${shift.name}</span>`; }
                     }
+                } else {
+                    const freeDayColor = activeProfile.freeDayColor || '#16a34a'; const textColor = getTextColorForBg(freeDayColor); style = `style="background-color: ${freeDayColor}; color: ${textColor};"`; dayClass += ' free-day';
                 }
-                html += `<div class="${dayClass}" data-date="${dateString}" ${style} onclick="${onClickAction}">${content}</div>`;
+                html += `<div class="${dayClass}" data-date="${dateString}" ${style} onclick="handleDayClick('${dateString}', ${isWorkDay})">${content}</div>`;
             }
             return html + `</div></div>`;
         }
-        function openModal(dateString) { selectedDateForAssignment = dateString; const modal = document.getElementById('shiftModal'); modal.classList.remove('hidden'); modal.classList.add('flex'); document.getElementById('modal-date').textContent = new Date(dateString + 'T00:00:00').toLocaleDateString('es-ES', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'}); const optionsContainer = document.getElementById('modal-shift-options'); optionsContainer.innerHTML = ''; activeProfile.shifts.forEach(shift => { const button = document.createElement('button'); button.textContent = shift.name; const textColor = getTextColorForBg(shift.color); button.className = 'w-full font-bold py-2 px-4 rounded-lg active:scale-95 transition-transform'; button.style.backgroundColor = shift.color; button.style.color = textColor; button.onclick = () => assignShift(shift.id); optionsContainer.appendChild(button); }); document.getElementById('note-input').value = activeProfile.notes[dateString] || ''; document.getElementById('google-cal-btn').disabled = !activeProfile.assignedShifts[dateString]; }
+
+        function openModal(dateString, isWorkDay) {
+            selectedDateForAssignment = dateString;
+            const modal = document.getElementById('shiftModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            const modalTitle = modal.querySelector('h3');
+            document.getElementById('modal-date').textContent = new Date(dateString + 'T00:00:00').toLocaleDateString('es-ES', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+
+            const shiftSection = document.getElementById('modal-shift-section');
+            if (isWorkDay) {
+                modalTitle.textContent = 'Gestionar Día';
+                shiftSection.classList.remove('hidden');
+                
+                const optionsContainer = document.getElementById('modal-shift-options');
+                optionsContainer.innerHTML = '';
+                activeProfile.shifts.forEach(shift => {
+                    const button = document.createElement('button');
+                    button.textContent = shift.name;
+                    const textColor = getTextColorForBg(shift.color);
+                    button.className = 'w-full font-bold py-2 px-4 rounded-lg active:scale-95 transition-transform';
+                    button.style.backgroundColor = shift.color;
+                    button.style.color = textColor;
+                    button.onclick = () => assignShift(shift.id);
+                    optionsContainer.appendChild(button);
+                });
+                document.getElementById('google-cal-btn').disabled = !activeProfile.assignedShifts[dateString];
+            } else {
+                modalTitle.textContent = 'Añadir/Editar Nota';
+                shiftSection.classList.add('hidden');
+            }
+            document.getElementById('note-input').value = activeProfile.notes[dateString] || '';
+        }
+
         function closeModal(event) { const modal = document.getElementById('shiftModal'); if (event.target === modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); selectedDateForAssignment = null; } }
         function assignShift(shiftId) { if (!selectedDateForAssignment) return; activeProfile.assignedShifts[selectedDateForAssignment] = shiftId; saveToLocalStorage(); document.getElementById('shiftModal').classList.add('hidden'); document.getElementById('shiftModal').classList.remove('flex'); refreshAllUI(); showToast('Turno asignado.'); }
         function removeShiftAssignment() { if (!selectedDateForAssignment) return; delete activeProfile.assignedShifts[selectedDateForAssignment]; saveToLocalStorage(); document.getElementById('shiftModal').classList.add('hidden'); document.getElementById('shiftModal').classList.remove('flex'); refreshAllUI(); showToast('Asignación de turno eliminada.', 'info'); }
-        function saveNote() { if (!selectedDateForAssignment) return; const noteText = document.getElementById('note-input').value.trim(); if (noteText) { activeProfile.notes[selectedDateForAssignment] = noteText; showToast('Nota guardada.'); } else { delete activeProfile.notes[selectedDateForAssignment]; showToast('Nota eliminada.', 'info'); } saveToLocalStorage(); refreshAllUI(); displayNoteForDate(selectedDateForAssignment); }
+        function saveNote() { if (!selectedDateForAssignment) return; const noteText = document.getElementById('note-input').value.trim(); if (noteText) { activeProfile.notes[selectedDateForAssignment] = noteText; showToast('Nota guardada.'); } else { delete activeProfile.notes[selectedDateForAssignment]; showToast('Nota eliminada.', 'info'); } saveToLocalStorage(); closeModal({target: document.getElementById('shiftModal')}); refreshAllUI(); displayNoteForDate(selectedDateForAssignment); }
         function displayNoteForDate(dateString) { if (currentlySelectedDate) { const prev = document.querySelector(`.day-cell[data-date="${currentlySelectedDate}"]`); if (prev) prev.classList.remove('selected-day'); } const current = document.querySelector(`.day-cell[data-date="${dateString}"]`); if (current) current.classList.add('selected-day'); currentlySelectedDate = dateString; const note = activeProfile.notes ? activeProfile.notes[dateString] : null; const displayArea = document.getElementById('notes-display-area'); if (note) { document.getElementById('note-display-date').textContent = new Date(dateString + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }); document.getElementById('note-display-content').textContent = note; displayArea.classList.remove('hidden'); } else { displayArea.classList.add('hidden'); } }
 
         function backupData() { downloadFile(`respaldo_calendario_${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(appData, null, 2), 'application/json'); showToast('Respaldo de datos descargado.');}
