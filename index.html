@@ -24,8 +24,10 @@
         body { font-family: 'Inter', sans-serif; touch-action: manipulation; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
         .day-cell {
-            aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            border-radius: 0.5rem; font-size: 1rem; /* Tamaño grande y legible */
+            /* Se eliminó aspect-ratio y se añadió una altura fija para hacer las celdas más altas */
+            height: 4.5rem; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            border-radius: 0.5rem; font-size: 1rem;
             font-weight: 500; transition: all 0.2s ease-in-out; line-height: 1.2;
         }
         .day-name { font-weight: bold; text-align: center; }
@@ -208,7 +210,6 @@
         
         let appData = {}, activeProfile = null, selectedDateForAssignment = null, currentDisplayYear, currentDisplayMonth;
         
-        // --- NUEVA FUNCION PARA COLAPSAR SECCIONES ---
         function toggleSection(contentId, headerElement) {
             const content = document.getElementById(contentId);
             const icon = headerElement.querySelector('svg');
@@ -396,4 +397,5 @@
     </script>
 </body>
 </html>
+
 
