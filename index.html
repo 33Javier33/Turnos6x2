@@ -25,16 +25,36 @@
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
         .day-cell {
             position: relative; 
-            aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            border-radius: 0.5rem; font-size: 1rem;
-            font-weight: 500; transition: all 0.2s ease-in-out; line-height: 1.2;
-            padding: 2px; /* Espacio para el texto adicional */
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            border-radius: 0.5rem;
+            font-weight: 500; transition: all 0.2s ease-in-out;
+            padding: 4px 2px;
+            box-sizing: border-box;
+
+            /* --- FIX PARA MOVILES --- */
+            height: 12.5vw;
+            max-height: 90px;
+            font-size: clamp(0.7rem, 2.2vw, 0.9rem);
+            line-height: 1.1;
         }
         .day-name { font-weight: bold; text-align: center; }
         .free-day { font-weight: bold; }
         .assigned-shift { font-weight: bold; }
-        .assigned-shift .day-number { font-size: 1.2em; }
-        .assigned-shift .shift-name-label { font-size: 0.7em; margin-top: 2px; line-height: 1; }
+        .assigned-shift .shift-name-label {
+            font-size: 0.65rem;
+            margin-top: 2px;
+            line-height: 1;
+            font-weight: 500;
+            text-align: center;
+        }
+        .free-day .free-day-label {
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-top: 2px;
+            line-height: 1;
+            opacity: 0.9;
+            text-transform: uppercase;
+        }
         .today { position: relative; ring-width: 3px; --tw-ring-color: #4f46e5; box-shadow: 0 0 0 3px var(--tw-ring-color); }
         .dark .today { --tw-ring-color: #818cf8; }
         .day-selected { 
@@ -243,7 +263,7 @@
         function createDefaultProfile() { return { id: crypto.randomUUID(), name: 'Mi Calendario', shifts: [{id: crypto.randomUUID(), name: '17:30-01:30', color: '#4f46e5'}], assignedShifts: {}, referenceDate: new Date().toISOString(), freeDayColor: '#16a34a', workDays: 6, restDays: 2, notes: {} }; }
         function loadFromLocalStorage() { try { const storedData = localStorage.getItem('calendarAppData_multiuser_v2'); appData = storedData ? JSON.parse(storedData) : { profiles: [createDefaultProfile()], activeProfileId: null }; if (!appData.profiles || appData.profiles.length === 0) { appData.profiles = [createDefaultProfile()]; } appData.profiles.forEach(p => { if (p.workDays === undefined) p.workDays = 6; if (p.restDays === undefined) p.restDays = 2; if(p.notes === undefined) p.notes = {}; }); appData.activeProfileId = appData.activeProfileId || appData.profiles[0].id; activeProfile = appData.profiles.find(p => p.id === appData.activeProfileId) || appData.profiles[0]; if (!activeProfile.freeDayColor) { activeProfile.freeDayColor = '#16a34a'; } } catch (e) { console.error("Error al cargar datos:", e); appData = { profiles: [createDefaultProfile()], activeProfileId: null }; activeProfile = appData.profiles[0]; } }
         function saveToLocalStorage() { const index = appData.profiles.findIndex(p => p.id === activeProfile.id); if (index !== -1) { appData.profiles[index] = activeProfile; } localStorage.setItem('calendarAppData_multiuser_v2', JSON.stringify(appData)); }
-        function switchProfile(profileId) { appData.activeProfileId = profileId; activeProfile = appData.profiles.find(p => p.id === profileId); saveToLocalStorage(); refreshAllUI(); closeMenu(); showToast(`Perfil '${activeProfile.name}' cargado.`, 'info'); }
+        function switchProfile(profileId) { if (draggedElement) return; appData.activeProfileId = profileId; activeProfile = appData.profiles.find(p => p.id === profileId); saveToLocalStorage(); refreshAllUI(); closeMenu(); showToast(`Perfil '${activeProfile.name}' cargado.`, 'info'); }
         function addProfile() { const nameInput = document.getElementById('new-profile-name'); const name = nameInput.value.trim(); if (!name) return; const newProfile = createDefaultProfile(); newProfile.name = name; appData.profiles.push(newProfile); nameInput.value = ''; switchProfile(newProfile.id); showToast(`Perfil "${name}" añadido.`);}
         function deleteProfile(profileId) { if (appData.profiles.length <= 1) { showToast("No se puede borrar el último perfil.", "error"); return; } if (!confirm("¿Seguro que quieres borrar este perfil?")) return; const deletedProfileName = appData.profiles.find(p => p.id === profileId)?.name || 'desconocido'; appData.profiles = appData.profiles.filter(p => p.id !== profileId); if (appData.activeProfileId === profileId) { switchProfile(appData.profiles[0].id); } else { saveToLocalStorage(); refreshAllUI(); } showToast(`Perfil "${deletedProfileName}" borrado.`, 'info');}
         
@@ -271,6 +291,7 @@
                 el.className = `draggable-item flex items-center justify-between p-2 rounded-lg ${isActive ? 'bg-indigo-100 dark:bg-indigo-900/50' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`;
                 el.dataset.id = profile.id;
                 el.draggable = isDraggable;
+                // The onclick for switching profile is now on a specific div inside to avoid conflict with drag
                 el.innerHTML = `<div class="flex-grow cursor-pointer" onclick="switchProfile('${profile.id}')"><span class="font-medium ${isActive ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-800 dark:text-gray-300'}">${profile.name}</span></div><div class="space-x-2 flex-shrink-0"><button onclick="editProfile('${profile.id}')" class="text-blue-500 text-sm">Editar</button>${!isActive ? `<button onclick="event.stopPropagation(); deleteProfile('${profile.id}')" class="text-red-500 hover:text-red-700 text-sm">Borrar</button>` : ''}</div>`;
                 list.appendChild(el);
             });
@@ -304,15 +325,28 @@
         }
 
         function setupDragAndDrop(container, onDrop) {
+            let isDragging = false;
+
             const handleDragStart = (e) => {
                 const target = e.target.closest('.draggable-item');
-                if (target && container.classList.contains('drag-enabled')) {
-                    draggedElement = target;
-                    setTimeout(() => target.classList.add('dragging'), 0);
-                    if (e.dataTransfer) {
-                        e.dataTransfer.setData('text/plain', target.dataset.id);
-                        e.dataTransfer.effectAllowed = 'move';
-                    }
+                if (!target || !container.classList.contains('drag-enabled')) return;
+                
+                // For touch events, we need a small delay to distinguish between a tap and a drag
+                if (e.type === 'touchstart') {
+                    isDragging = false;
+                    const touchMove = () => isDragging = true;
+                    target.addEventListener('touchmove', touchMove, { once: true });
+                }
+
+                draggedElement = target;
+                // Defer adding class to avoid interfering with click events
+                setTimeout(() => {
+                    if (draggedElement) draggedElement.classList.add('dragging');
+                }, 100);
+
+                if (e.dataTransfer) {
+                    e.dataTransfer.setData('text/plain', target.dataset.id);
+                    e.dataTransfer.effectAllowed = 'move';
                 }
             };
             
@@ -322,6 +356,7 @@
                 }
                 document.querySelectorAll('.drop-zone').forEach(zone => zone.remove());
                 draggedElement = null;
+                isDragging = false;
             };
 
             const handleMove = (e) => {
@@ -351,6 +386,7 @@
                 }
                 
                 e.preventDefault();
+                e.stopPropagation(); // Prevent event bubbling
                 
                 const id = e.dataTransfer?.getData('text/plain') || draggedElement.dataset.id;
                 const clientY = e.clientY ?? e.changedTouches?.[0].clientY;
@@ -370,7 +406,15 @@
             container.addEventListener('drop', handleDrop);
             
             container.addEventListener('touchstart', handleDragStart, { passive: true });
-            container.addEventListener('touchend', handleDrop);
+            container.addEventListener('touchend', (e) => {
+                 // Check if it was a drag or a tap
+                if (!isDragging && e.target.closest('.draggable-item')) {
+                    // It was a tap, let the onclick event handle it.
+                } else if (draggedElement) {
+                    handleDrop(e);
+                }
+                handleDragEnd();
+            });
             container.addEventListener('touchmove', handleMove, { passive: false });
         }
         
@@ -410,7 +454,7 @@
                 if (cyclePosition < restDays) {
                     const freeDayColor = activeProfile.freeDayColor || '#16a34a'; const textColor = getTextColorForBg(freeDayColor);
                     style = `style="background-color: ${freeDayColor}; color: ${textColor};"`; dayClass += ' free-day';
-                    content += `<span class="text-xs font-bold mt-1 opacity-90">LIBRE</span>`;
+                    content += `<span class="free-day-label">LIBRE</span>`;
                 } else {
                     dayClass += ' work-day bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 assignable hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer'; onClick = `onclick="handleDayClick('${dateString}', this)"`;
                     const assignedShiftId = activeProfile.assignedShifts[dateString];
