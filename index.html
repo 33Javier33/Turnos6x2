@@ -5,16 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Calendario de Turnos Profesional</title>
     
-    <!-- Enlace al Web App Manifest -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- Meta tags para PWA en iOS y color de la barra de estado -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Turnos Pro">
-    <meta name="theme-color" content="#1f2937"> <!-- Color oscuro para la barra de estado -->
-    
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="theme-color" content="#1f2937"> <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -453,10 +449,12 @@
                 if (isToday) { dayClass += ' today'; }
                 if (cyclePosition < restDays) {
                     const freeDayColor = activeProfile.freeDayColor || '#16a34a'; const textColor = getTextColorForBg(freeDayColor);
-                    style = `style="background-color: ${freeDayColor}; color: ${textColor};"`; dayClass += ' free-day';
+                    style = `style="background-color: ${freeDayColor}; color: ${textColor};"`; 
+                    dayClass += ' free-day cursor-pointer'; // <-- MODIFICACIÓN 1
+                    onClick = `onclick="handleDayClick('${dateString}', this)"`; // <-- MODIFICACIÓN 2
                     content += `<span class="free-day-label">LIBRE</span>`;
                 } else {
-                    dayClass += ' work-day bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 assignable hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer'; onClick = `onclick="handleDayClick('${dateString}', this)"`;
+                    dayClass += ' work-day bg-gray-200 dark:bg-gray-700 assignable hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer'; onClick = `onclick="handleDayClick('${dateString}', this)"`;
                     const assignedShiftId = activeProfile.assignedShifts[dateString];
                     if (assignedShiftId) { const shift = activeProfile.shifts.find(s => s.id === assignedShiftId); if (shift) { const textColor = getTextColorForBg(shift.color); style = `style="background-color: ${shift.color}; color: ${textColor};"`; dayClass += ' assigned-shift'; content += `<span class="shift-name-label">${shift.name}</span>`; } }
                 }
@@ -464,7 +462,63 @@
             }
             return html + `</div></div>`;
         }
-        function openModal(dateString) { selectedDateForAssignment = dateString; const modal = document.getElementById('shiftModal'); modal.classList.remove('hidden'); modal.classList.add('flex'); document.getElementById('modal-date').textContent = new Date(dateString + 'T00:00:00').toLocaleDateString('es-ES', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'}); const optionsContainer = document.getElementById('modal-shift-options'); optionsContainer.innerHTML = ''; activeProfile.shifts.forEach(shift => { const button = document.createElement('button'); button.textContent = shift.name; const textColor = getTextColorForBg(shift.color); button.className = 'w-full font-bold py-2 px-4 rounded-lg active:scale-95 transition-transform text-sm'; button.style.backgroundColor = shift.color; button.style.color = textColor; button.onclick = () => assignShift(shift.id); optionsContainer.appendChild(button); }); document.getElementById('note-textarea').value = activeProfile.notes[dateString] || ''; document.getElementById('google-cal-btn').disabled = !activeProfile.assignedShifts[dateString]; }
+
+        // --- MODIFICACIÓN 3: Función openModal reemplazada ---
+        function openModal(dateString) {
+            selectedDateForAssignment = dateString;
+
+            // --- Lógica para detectar si el día es libre ---
+            const refDate = new Date(activeProfile.referenceDate);
+            const utcReferenceDate = Date.UTC(refDate.getUTCFullYear(), refDate.getUTCMonth(), refDate.getUTCDate());
+            const date = new Date(dateString + "T00:00:00");
+            const utcCurrentDate = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+            const diffDays = Math.round((utcCurrentDate - utcReferenceDate) / (1000 * 60 * 60 * 24));
+            const workDays = activeProfile.workDays || 6;
+            const restDays = activeProfile.restDays || 2;
+            const cycleLength = workDays + restDays;
+            const cyclePosition = ((diffDays % cycleLength) + cycleLength) % cycleLength;
+            const isFreeDay = cyclePosition < restDays;
+            // --- Fin de la lógica ---
+
+            const modal = document.getElementById('shiftModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('modal-date').textContent = new Date(dateString + 'T00:00:00').toLocaleDateString('es-ES', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+
+            // Seleccionamos las secciones que podrían ocultarse
+            const shiftAssignmentSection = document.getElementById('modal-shift-options').parentElement;
+            const removeShiftButton = document.querySelector('button[onclick="removeShiftAssignment()"]');
+            const googleCalButton = document.getElementById('google-cal-btn');
+
+            // Ocultamos o mostramos las secciones según si es día libre
+            if (isFreeDay) {
+                shiftAssignmentSection.classList.add('hidden');
+                removeShiftButton.classList.add('hidden');
+                googleCalButton.classList.add('hidden');
+            } else {
+                shiftAssignmentSection.classList.remove('hidden');
+                removeShiftButton.classList.remove('hidden');
+                googleCalButton.classList.remove('hidden');
+
+                const optionsContainer = document.getElementById('modal-shift-options');
+                optionsContainer.innerHTML = '';
+                activeProfile.shifts.forEach(shift => {
+                    const button = document.createElement('button');
+                    button.textContent = shift.name;
+                    const textColor = getTextColorForBg(shift.color);
+                    button.className = 'w-full font-bold py-2 px-4 rounded-lg active:scale-95 transition-transform text-sm';
+                    button.style.backgroundColor = shift.color;
+                    button.style.color = textColor;
+                    button.onclick = () => assignShift(shift.id);
+                    optionsContainer.appendChild(button);
+                });
+                googleCalButton.disabled = !activeProfile.assignedShifts[dateString];
+            }
+            
+            // La nota siempre se muestra
+            document.getElementById('note-textarea').value = activeProfile.notes[dateString] || '';
+        }
+
         function closeModal(event) { const modal = document.getElementById('shiftModal'); if (event.target === modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); selectedDateForAssignment = null; if(selectedDayElement) { selectedDayElement.classList.remove('day-selected'); selectedDayElement = null; } } }
         function assignShift(shiftId) { if (!selectedDateForAssignment) return; activeProfile.assignedShifts[selectedDateForAssignment] = shiftId; saveToLocalStorage(); document.getElementById('shiftModal').classList.add('hidden'); document.getElementById('shiftModal').classList.remove('flex'); refreshAllUI(); showToast('Turno asignado.'); }
         function removeShiftAssignment() { if (!selectedDateForAssignment) return; delete activeProfile.assignedShifts[selectedDateForAssignment]; saveToLocalStorage(); document.getElementById('shiftModal').classList.add('hidden'); document.getElementById('shiftModal').classList.remove('flex'); refreshAllUI(); showToast('Asignación de turno eliminada.', 'info'); }
@@ -545,5 +599,3 @@
     </script>
 </body>
 </html>
-
-
