@@ -194,6 +194,9 @@
         <div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-6"></div>
         <h3 class="text-xl font-extrabold mb-6">Opciones de Datos</h3>
         <div class="grid grid-cols-1 gap-3">
+            <button onclick="iniciarTutorial()" class="bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-extrabold py-4 rounded-2xl uppercase text-xs shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30 active:scale-95 transition-transform">
+                🎓 Ver Tutorial de la App
+            </button>
             <button onclick="backupData()" class="bg-slate-800 text-white font-bold py-4 rounded-2xl uppercase text-xs italic">Copia de Seguridad JSON</button>
             <button onclick="document.getElementById('restore-input').click()" class="bg-slate-100 dark:bg-slate-800 font-bold py-4 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 uppercase text-xs italic">Restaurar Copia</button>
             <input type="file" id="restore-input" class="hidden" accept=".json" onchange="restoreData(event)">
@@ -881,6 +884,205 @@
             }).join('');
         }
 
+
+        // ══════════════════════════════════════════════════════
+        // TUTORIAL SPOTLIGHT
+        // ══════════════════════════════════════════════════════
+        const TUTORIAL_STEPS = [
+            {
+                target: 'current-user-name',
+                title: '👤 Perfil activo',
+                body: 'Aquí ves el nombre del perfil que estás usando. Cada persona puede tener su propio perfil con su ciclo de turnos independiente.',
+                position: 'bottom'
+            },
+            {
+                target: 'countdown-container',
+                title: '⏳ Cuenta regresiva',
+                body: 'Te indica cuántos días faltan para tu próximo descanso, o si hoy o mañana es tu día libre según tu ciclo.',
+                position: 'bottom'
+            },
+            {
+                target: 'calendar-wrapper',
+                title: '📅 Calendario de turnos',
+                body: 'El corazón de la app. Los días libres se muestran con el color que elijas. Los días con turno asignado aparecen en el color del turno. Toca un día una vez para seleccionarlo y dos veces para abrirlo y asignarle un turno o una nota.',
+                position: 'top'
+            },
+            {
+                navTarget: 'sheet-profiles',
+                navIcon: 'Perfiles',
+                title: '👥 Perfiles',
+                body: 'Crea un perfil por cada persona. Cada perfil tiene su propio ciclo, turnos y vacaciones. Toca el nombre de un perfil para activarlo. Usa el ≡ para reordenarlos.',
+                position: 'top'
+            },
+            {
+                navTarget: 'sheet-cycle',
+                navIcon: 'Ciclo',
+                title: '🔄 Ciclo de trabajo',
+                body: 'Define tu patrón de trabajo. Ingresa una fecha de referencia (un día que sabes que trabajaste o descansaste), cuántos días trabajas seguidos y cuántos días libres tienes. La app calcula automáticamente todo el calendario.',
+                position: 'top'
+            },
+            {
+                navTarget: 'sheet-shifts',
+                navIcon: 'Turnos',
+                title: '🕐 Gestión de turnos',
+                body: 'Crea los turnos que trabajas, por ejemplo "08:00–16:00" con su color. Luego puedes asignarlos a días específicos tocando dos veces en el calendario. Puedes importar los turnos de otro perfil.',
+                position: 'top'
+            },
+            {
+                navTarget: 'sheet-vacaciones',
+                navIcon: 'Vacac.',
+                title: '🏖️ Vacaciones',
+                body: 'Calcula tus vacaciones legales (15 días hábiles: lunes a sábado, sin feriados ni domingos) o días adicionales (corridos, sin feriados). Elige la cantidad de días, la fecha de inicio y la app te dice cuándo regresas. Puedes agregar el evento a Google Calendar.',
+                position: 'top'
+            },
+            {
+                navTarget: 'sheet-data',
+                navIcon: 'Datos',
+                title: '💾 Opciones de datos',
+                body: 'Aquí puedes hacer una copia de seguridad en JSON para no perder tus datos, restaurar una copia anterior, exportar el mes actual a Excel o PDF, y volver a ver este tutorial cuando quieras.',
+                position: 'top'
+            },
+            {
+                target: 'calendar-wrapper',
+                title: '✅ ¡Listo para usar!',
+                body: 'Ya conoces todo lo que necesitas. Empieza creando tu perfil, configura tu ciclo de trabajo y asigna tus turnos. ¡Que tengas buenos turnos! 🙌',
+                position: 'top',
+                isLast: true
+            }
+        ];
+
+        let tutorialStep = 0;
+
+        function iniciarTutorial() {
+            closeAllSheets();
+            tutorialStep = 0;
+            mostrarPaso();
+        }
+
+        function mostrarPaso() {
+            const step = TUTORIAL_STEPS[tutorialStep];
+            const overlay   = document.getElementById('tutorial-overlay');
+            const spotlight = document.getElementById('tutorial-spotlight');
+            const tooltip   = document.getElementById('tutorial-tooltip');
+
+            overlay.classList.remove('hidden');
+            spotlight.classList.remove('hidden');
+            tooltip.classList.remove('hidden');
+
+            // Si el paso apunta a un botón de nav, ábrelo primero
+            if (step.navTarget) {
+                // Abrir el panel correspondiente sin cerrar el tutorial
+                document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open'));
+                document.getElementById(step.navTarget).classList.add('open');
+                // Pequeño delay para que el panel aparezca antes de calcular posición
+                setTimeout(() => posicionarPaso(step), 420);
+            } else {
+                // Cerrar paneles si el paso apunta a un elemento de la pantalla principal
+                document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open'));
+                setTimeout(() => posicionarPaso(step), 50);
+            }
+        }
+
+        function posicionarPaso(step) {
+            const spotlight = document.getElementById('tutorial-spotlight');
+
+            // Determinar elemento a resaltar con el spotlight
+            let el = null;
+            if (step.target) {
+                el = document.getElementById(step.target);
+            } else if (step.navTarget) {
+                el = document.getElementById(step.navTarget);
+            }
+
+            // Posicionar spotlight sobre el elemento
+            if (el) {
+                const rect = el.getBoundingClientRect();
+                const pad  = 6;
+                // Limitar el spotlight al área visible, no tapar el tooltip de abajo
+                const maxH = window.innerHeight * 0.55;
+                spotlight.style.left   = Math.max(4, rect.left - pad) + 'px';
+                spotlight.style.top    = Math.max(4, rect.top - pad) + 'px';
+                spotlight.style.width  = Math.min(rect.width + pad*2, window.innerWidth - 8) + 'px';
+                spotlight.style.height = Math.min(rect.height + pad*2, maxH) + 'px';
+                spotlight.style.display = 'block';
+            } else {
+                spotlight.style.display = 'none';
+            }
+
+            // Contenido del tooltip
+            document.getElementById('tutorial-step-label').textContent = `Paso ${tutorialStep + 1} de ${TUTORIAL_STEPS.length}`;
+            document.getElementById('tutorial-title').textContent  = TUTORIAL_STEPS[tutorialStep].title;
+            document.getElementById('tutorial-body').textContent   = TUTORIAL_STEPS[tutorialStep].body;
+
+            // Botones nav
+            const prevBtn = document.getElementById('tutorial-prev');
+            const nextBtn = document.getElementById('tutorial-next');
+            prevBtn.style.opacity = tutorialStep === 0 ? '0' : '1';
+            prevBtn.style.pointerEvents = tutorialStep === 0 ? 'none' : 'auto';
+
+            if (TUTORIAL_STEPS[tutorialStep].isLast) {
+                nextBtn.textContent = '¡Entendido! ✓';
+                nextBtn.style.background = '#10b981';
+            } else {
+                nextBtn.textContent = 'Siguiente →';
+                nextBtn.style.background = '';
+            }
+
+            // Dots
+            const dotsEl = document.getElementById('tutorial-dots');
+            dotsEl.innerHTML = TUTORIAL_STEPS.map((_, i) =>
+                `<div style="border-radius:9999px;transition:all 0.2s;width:${i===tutorialStep?'16px':'8px'};height:8px;background:${i===tutorialStep?'#6366f1':'#cbd5e1'}"></div>`
+            ).join('');
+        }
+
+        function tutorialNext() {
+            if (tutorialStep >= TUTORIAL_STEPS.length - 1) {
+                cerrarTutorial();
+                return;
+            }
+            tutorialStep++;
+            mostrarPaso();
+        }
+
+        function tutorialPrev() {
+            if (tutorialStep <= 0) return;
+            tutorialStep--;
+            mostrarPaso();
+        }
+
+        function cerrarTutorial() {
+            // Ocultar todos los elementos del tutorial
+            const overlay   = document.getElementById('tutorial-overlay');
+            const spotlight = document.getElementById('tutorial-spotlight');
+            const tooltip   = document.getElementById('tutorial-tooltip');
+
+            overlay.classList.add('hidden');
+            tooltip.classList.add('hidden');
+
+            // Limpiar spotlight completamente — tamaño y posición a cero
+            spotlight.classList.add('hidden');
+            spotlight.style.left   = '0px';
+            spotlight.style.top    = '0px';
+            spotlight.style.width  = '0px';
+            spotlight.style.height = '0px';
+            spotlight.style.display = 'none';
+
+            // Cerrar cualquier panel que se haya abierto durante el tutorial
+            document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open'));
+            document.getElementById('overlay').classList.add('hidden');
+
+            // Limpiar nav items
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.add('text-slate-400');
+                btn.classList.remove('text-indigo-600', 'dark:text-indigo-400');
+            });
+            const hoyBtn = document.querySelector('.nav-item[onclick="closeAllSheets()"]');
+            if (hoyBtn) {
+                hoyBtn.classList.remove('text-slate-400');
+                hoyBtn.classList.add('text-indigo-600', 'dark:text-indigo-400');
+            }
+        }
+
         window.onload = () => {
             const today = new Date(); currentDisplayYear = today.getFullYear(); currentDisplayMonth = today.getMonth();
             monthNames.forEach((m, i) => document.getElementById('displayMonth').add(new Option(m, i)));
@@ -888,5 +1090,48 @@
             loadFromLocalStorage(); refreshAllUI();
         };
     </script>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- TUTORIAL SPOTLIGHT                                 -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- Overlay oscuro con agujero luminoso -->
+    <div id="tutorial-overlay" class="hidden fixed inset-0 z-[300]" style="background:rgba(2,6,23,0.85);backdrop-filter:blur(2px)"></div>
+
+    <!-- Recuadro spotlight (borde iluminado sobre el elemento) -->
+    <div id="tutorial-spotlight" class="hidden fixed z-[310] rounded-2xl pointer-events-none"
+        style="box-shadow:0 0 0 4px #6366f1, 0 0 0 8px rgba(99,102,241,0.3), 0 0 40px rgba(99,102,241,0.4); transition: all 0.4s cubic-bezier(0.33,1,0.68,1);">
+    </div>
+
+    <!-- Tooltip explicativo — anclado abajo en móvil -->
+    <div id="tutorial-tooltip" class="hidden fixed z-[320] left-0 right-0 bottom-0 px-3 pb-6"
+        style="transition: transform 0.4s cubic-bezier(0.33,1,0.68,1);">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-indigo-100 dark:border-indigo-900">
+            <!-- Cabecera -->
+            <div class="p-4 bg-gradient-to-r from-indigo-500 to-violet-600">
+                <div class="flex items-center justify-between mb-1">
+                    <span id="tutorial-step-label" class="text-[9px] font-extrabold text-indigo-200 uppercase tracking-widest"></span>
+                    <button onclick="cerrarTutorial()" class="w-7 h-7 rounded-full bg-white/20 text-white text-xs font-bold flex items-center justify-center active:scale-90">✕</button>
+                </div>
+                <p id="tutorial-title" class="text-base font-extrabold text-white leading-tight"></p>
+            </div>
+            <!-- Cuerpo con scroll si es largo -->
+            <div class="px-4 pt-3 pb-1 max-h-32 overflow-y-auto">
+                <p id="tutorial-body" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed"></p>
+            </div>
+            <!-- Navegación -->
+            <div class="px-4 py-3 flex items-center justify-between gap-2">
+                <button id="tutorial-prev" onclick="tutorialPrev()"
+                    class="flex-1 py-3 rounded-2xl text-[11px] font-extrabold uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 active:scale-95 transition-transform">
+                    ← Anterior
+                </button>
+                <div id="tutorial-dots" class="flex gap-1.5 shrink-0"></div>
+                <button id="tutorial-next" onclick="tutorialNext()"
+                    class="flex-1 py-3 rounded-2xl text-[11px] font-extrabold uppercase bg-indigo-600 text-white active:scale-95 transition-transform">
+                    Siguiente →
+                </button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
