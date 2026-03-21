@@ -95,6 +95,29 @@
             </div>
             <div id="calendar-wrapper"></div>
         </div>
+        <!-- Banner tutorial primera vez -->
+        <div id="tutorial-banner" class="hidden mx-1 mb-4">
+            <div class="rounded-3xl overflow-hidden shadow-lg border border-indigo-100 dark:border-indigo-900">
+                <div class="bg-gradient-to-r from-indigo-500 to-violet-600 p-4 flex items-center gap-3">
+                    <div class="text-3xl">🎓</div>
+                    <div class="flex-1">
+                        <p class="text-xs font-extrabold text-white">¡Bienvenido a Turnos Pro!</p>
+                        <p class="text-[10px] text-indigo-200 mt-0.5">¿Es tu primera vez? Te explicamos todo en 2 minutos.</p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-900 p-3 flex gap-2">
+                    <button onclick="verTutorialDesdeBanner()"
+                        class="flex-1 py-3 rounded-2xl text-[11px] font-extrabold uppercase bg-indigo-600 text-white active:scale-95 transition-transform">
+                        Ver tutorial
+                    </button>
+                    <button onclick="descartarBanner()"
+                        class="flex-1 py-3 rounded-2xl text-[11px] font-extrabold uppercase bg-slate-100 dark:bg-slate-800 text-slate-400 active:scale-95 transition-transform">
+                        No mostrar más
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="text-center py-8">
             <div class="flex items-center justify-center gap-4 mb-3">
                 <span class="flex items-center gap-1.5 text-[9px] font-bold text-slate-400">
@@ -959,6 +982,19 @@
             mostrarPaso();
         }
 
+        function verTutorialDesdeBanner() {
+            document.getElementById('tutorial-banner').classList.add('hidden');
+            iniciarTutorial();
+        }
+
+        function descartarBanner() {
+            localStorage.setItem('tutorial_descartado', '1');
+            const banner = document.getElementById('tutorial-banner');
+            banner.style.transition = 'opacity 0.3s';
+            banner.style.opacity = '0';
+            setTimeout(() => banner.classList.add('hidden'), 300);
+        }
+
         function mostrarPaso() {
             const step = TUTORIAL_STEPS[tutorialStep];
             const overlay   = document.getElementById('tutorial-overlay');
@@ -1088,6 +1124,10 @@
             monthNames.forEach((m, i) => document.getElementById('displayMonth').add(new Option(m, i)));
             for(let i=-5; i<=5; i++) document.getElementById('displayYear').add(new Option(currentDisplayYear+i, currentDisplayYear+i));
             loadFromLocalStorage(); refreshAllUI();
+            // Mostrar banner tutorial si nunca fue descartado
+            if (!localStorage.getItem('tutorial_descartado')) {
+                document.getElementById('tutorial-banner').classList.remove('hidden');
+            }
         };
     </script>
 
