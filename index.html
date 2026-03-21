@@ -96,6 +96,17 @@
             <div id="calendar-wrapper"></div>
         </div>
         <div class="text-center py-8">
+            <div class="flex items-center justify-center gap-4 mb-3">
+                <span class="flex items-center gap-1.5 text-[9px] font-bold text-slate-400">
+                    <span class="w-2 h-2 rounded-full bg-red-400 shadow-[0_0_4px_#f87171] inline-block"></span>Feriado Chile
+                </span>
+                <span class="flex items-center gap-1.5 text-[9px] font-bold text-slate-400">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_5px_#fbbf24] inline-block"></span>Nota
+                </span>
+                <span class="flex items-center gap-1.5 text-[9px] font-bold text-slate-400">
+                    <span class="w-2 h-2 rounded-full inline-block" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)"></span>Vacaciones
+                </span>
+            </div>
             <div class="brand-footer italic">CarlosPN Interactive®</div>
         </div>
     </main>
@@ -116,6 +127,10 @@
         <button onclick="openSheet('sheet-shifts')" class="nav-item flex flex-col items-center text-slate-400">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <span class="text-[9px] font-bold mt-1 uppercase">Turnos</span>
+        </button>
+        <button onclick="openSheet('sheet-vacaciones')" class="nav-item flex flex-col items-center text-slate-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+            <span class="text-[9px] font-bold mt-1 uppercase">Vacac.</span>
         </button>
         <button onclick="openSheet('sheet-data')" class="nav-item flex flex-col items-center text-slate-400">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17v-2a4 4 0 10-8 0v2m8 0V4a2 2 0 10-4 0v13m4 0H5m11 3a2 2 0 100-4 2 2 0 000 4z"/></svg>
@@ -189,6 +204,90 @@
         </div>
     </div>
 
+    <!-- PANEL VACACIONES -->
+    <div id="sheet-vacaciones" class="bottom-sheet bg-white dark:bg-slate-900 border-t dark:border-slate-800">
+        <div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-6"></div>
+        <div class="flex items-center justify-between mb-5">
+            <div>
+                <h3 class="text-xl font-extrabold">🏖️ Vacaciones</h3>
+                <p class="text-[10px] text-slate-400 mt-0.5">Cálculo y registro por persona</p>
+            </div>
+        </div>
+        <!-- Tarjeta perfil activo -->
+        <div class="mb-5 p-4 rounded-3xl bg-gradient-to-r from-indigo-500 to-violet-600 shadow-lg">
+            <p class="text-[9px] font-extrabold text-indigo-200 uppercase tracking-widest mb-1">Perfil activo</p>
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                </div>
+                <span id="vac-sheet-profile-name" class="text-base font-extrabold text-white tracking-tight"></span>
+            </div>
+        </div>
+        <!-- Selector tipo -->
+        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">Tipo de vacaciones</p>
+        <div class="grid grid-cols-2 gap-3 mb-3">
+            <button id="vac-sheet-btn-15" onclick="selectVacationTypeSheet('15')"
+                class="py-4 rounded-2xl font-extrabold text-[11px] uppercase border-2 border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 transition-all">
+                📅 Días Hábiles<br><span class="text-[9px] font-bold normal-case">Lun–Sáb, sin feriados</span>
+            </button>
+            <button id="vac-sheet-btn-6" onclick="selectVacationTypeSheet('6')"
+                class="py-4 rounded-2xl font-extrabold text-[11px] uppercase border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 transition-all">
+                ➕ Días Adicionales<br><span class="text-[9px] font-bold normal-case">Corridos, sin feriados</span>
+            </button>
+        </div>
+        <!-- Descripción dinámica -->
+        <div id="vac-sheet-desc-box" class="mb-5 p-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900">
+            <p id="vac-sheet-desc" class="text-[10px] text-amber-700 dark:text-amber-300 leading-relaxed">
+                <strong>Lunes a sábado</strong> cuentan como días hábiles.<br>
+                <strong>Domingos y feriados chilenos</strong> no cuentan.<br>
+                Los <strong>días libres del ciclo sí se consumen</strong> como vacaciones.
+            </p>
+        </div>
+        <!-- Cantidad + Fecha -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <div>
+                <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">Cantidad de días</p>
+                <div class="flex items-center bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden">
+                    <button onclick="ajustarDias(-1)" class="px-4 py-3 text-lg font-extrabold text-slate-400 active:scale-95 transition-all">−</button>
+                    <input type="number" id="vac-sheet-days" value="15" min="1" max="365"
+                        class="flex-1 text-center bg-transparent border-none text-base font-extrabold text-slate-700 dark:text-slate-200 focus:ring-0 w-0"
+                        oninput="validarDias(this)">
+                    <button onclick="ajustarDias(1)" class="px-4 py-3 text-lg font-extrabold text-slate-400 active:scale-95 transition-all">+</button>
+                </div>
+                <p id="vac-days-hint" class="text-[9px] text-amber-500 font-bold mt-1 text-center">Legal: 15 días</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">Fecha de inicio</p>
+                <input type="date" id="vac-sheet-start" class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none text-sm font-bold">
+            </div>
+        </div>
+        <button onclick="calcularVacaciones()"
+            class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-extrabold py-4 rounded-3xl uppercase text-xs shadow-lg active:scale-95 transition-transform mb-5">
+            Calcular Vacaciones
+        </button>
+        <!-- Resultado -->
+        <div id="vac-sheet-result" class="hidden mb-6">
+            <div class="rounded-3xl overflow-hidden shadow-lg">
+                <div class="bg-gradient-to-r from-amber-400 to-orange-400 p-4 text-center">
+                    <p class="text-[9px] font-extrabold text-amber-900 uppercase tracking-widest mb-1">📅 Fecha de Regreso</p>
+                    <p id="vac-sheet-return-date" class="text-lg font-extrabold text-white capitalize leading-tight"></p>
+                </div>
+                <div class="bg-amber-50 dark:bg-amber-900/30 p-3 text-center space-y-2">
+                    <p id="vac-sheet-summary" class="text-[10px] text-amber-700 dark:text-amber-300 font-bold"></p>
+                    <button onclick="agregarVacacionesGoogleCalendar()"
+                        class="w-full py-3 rounded-2xl font-extrabold text-[11px] uppercase bg-white dark:bg-slate-800 text-blue-600 border border-blue-200 dark:border-blue-800 flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                        📅 Agregar a Google Calendar
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Historial -->
+        <div>
+            <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">Vacaciones registradas</p>
+            <div id="vac-history-list" class="space-y-3"></div>
+        </div>
+    </div>
+
     <!-- MODAL DETALLE -->
     <div id="shiftModal" class="fixed inset-0 z-[200] items-end sm:items-center justify-center hidden bg-slate-950/60 backdrop-blur-md p-4" onclick="closeModal(event)">
         <div id="modal-content" class="bg-white dark:bg-slate-900 rounded-t-[3rem] sm:rounded-[3rem] shadow-2xl w-full max-w-md overflow-hidden">
@@ -239,6 +338,11 @@
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.add('text-slate-400'));
             const activeBtn = Array.from(document.querySelectorAll('.nav-item')).find(btn => btn.getAttribute('onclick')?.includes(id));
             if(activeBtn) { activeBtn.classList.remove('text-slate-400'); activeBtn.classList.add('text-indigo-600', 'dark:text-indigo-400'); }
+            if (id === 'sheet-vacaciones') {
+                const nameEl = document.getElementById('vac-sheet-profile-name');
+                if (nameEl) nameEl.textContent = activeProfile.name;
+                renderVacHistory();
+            }
         }
 
         function closeAllSheets() {
@@ -262,7 +366,7 @@
             return (((r * 299) + (g * 587) + (b * 114)) / 1000) > 150 ? '#000000' : '#FFFFFF';
         }
 
-        function createDefaultProfile() { return { id: crypto.randomUUID(), name: 'Principal', shifts: [], assignedShifts: {}, referenceDate: new Date().toISOString(), freeDayColor: '#10b981', workDays: 6, restDays: 2, notes: {} }; }
+        function createDefaultProfile() { return { id: crypto.randomUUID(), name: 'Principal', shifts: [], assignedShifts: {}, referenceDate: new Date().toISOString(), freeDayColor: '#10b981', workDays: 6, restDays: 2, notes: {}, vacationDays: {}, vacationRecords: [] }; }
 
         function loadFromLocalStorage() {
             try {
@@ -270,12 +374,20 @@
                 appData = stored ? JSON.parse(stored) : { profiles: [createDefaultProfile()], activeProfileId: null };
                 appData.activeProfileId = appData.activeProfileId || appData.profiles[0].id;
                 activeProfile = appData.profiles.find(p => p.id === appData.activeProfileId) || appData.profiles[0];
+                appData.profiles.forEach(p => {
+                    if (!p.vacationDays) p.vacationDays = {};
+                    if (!p.vacationRecords) p.vacationRecords = [];
+                    reconstruirVacationRecords(p);
+                });
             } catch (e) { appData = { profiles: [createDefaultProfile()], activeProfileId: null }; activeProfile = appData.profiles[0]; }
         }
 
         function saveToLocalStorage() { localStorage.setItem('calendarAppData_multiuser_v2', JSON.stringify(appData)); }
 
-        function refreshAllUI() { renderProfileManager(); renderShiftManager(); updateConfigControls(); renderCurrentCalendar(); updateCountdown(); document.getElementById('current-user-name').textContent = activeProfile.name; }
+        function refreshAllUI() {
+            renderProfileManager(); renderShiftManager(); updateConfigControls(); renderCurrentCalendar(); updateCountdown();
+            document.getElementById('current-user-name').textContent = activeProfile.name;
+        }
 
         function switchProfile(id) { 
             if(document.getElementById('profile-drag-check').checked) return;
@@ -402,13 +514,21 @@
                 const diff = Math.round((Date.UTC(year, month, d) - Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), ref.getUTCDate())) / 864e5);
                 const pos = ((diff % cycle) + cycle) % cycle;
                 let style = "", label = "", cls = "day-cell";
-                if(pos < activeProfile.restDays) { style = `style="background-color: ${activeProfile.freeDayColor}; color: ${getTextColorForBg(activeProfile.freeDayColor)}; border-color: ${activeProfile.freeDayColor}"`; label = "LIBRE"; cls += " free-day"; }
+                const vacDays = activeProfile.vacationDays || {};
+                if (vacDays[dateStr] === 'v15') {
+                    style = `style="background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#78350f;border-color:#f59e0b"`; label = "VACAC."; cls += " assigned-shift";
+                } else if (vacDays[dateStr] === 'v6') {
+                    style = `style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);color:#ede9fe;border-color:#8b5cf6"`; label = "+6 DÍAS"; cls += " assigned-shift";
+                } else if(pos < activeProfile.restDays) { style = `style="background-color: ${activeProfile.freeDayColor}; color: ${getTextColorForBg(activeProfile.freeDayColor)}; border-color: ${activeProfile.freeDayColor}"`; label = "LIBRE"; cls += " free-day"; }
                 else { cls += " work-day"; const sid = activeProfile.assignedShifts[dateStr]; const s = activeProfile.shifts.find(x => x.id === sid);
                     if(s) { style = `style="background-color: ${s.color}; color: ${getTextColorForBg(s.color)}; border-color: ${s.color}"`; label = s.name; cls += " assigned-shift"; }
                     else { cls += " bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-800 cursor-pointer shadow-sm"; }
                 }
                 if(d === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) cls += " today";
-                html += `<div class="${cls}" ${style} onclick="handleDayClick('${dateStr}', this)"><span>${d}</span><span class="shift-name-label">${label}</span>${activeProfile.notes[dateStr] ? '<div class="absolute bottom-1 right-1 w-1 h-1 rounded-full bg-amber-400 shadow-[0_0_5px_#fbbf24]"></div>' : ''}</div>`;
+                const holidays = getChileanHolidays(year);
+                const isHoliday = holidays.has(dateStr);
+                const holidayDot = isHoliday ? '<div class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-red-400 shadow-[0_0_4px_#f87171]"></div>' : '';
+                html += `<div class="${cls}" ${style} onclick="handleDayClick('${dateStr}', this)"><span>${d}</span><span class="shift-name-label">${label}</span>${activeProfile.notes[dateStr] ? '<div class="absolute bottom-1 right-1 w-1 h-1 rounded-full bg-amber-400 shadow-[0_0_5px_#fbbf24]"></div>' : ''}${holidayDot}</div>`;
             }
             return html + `</div></div>`;
         }
@@ -533,6 +653,232 @@
             for(let i=0; i<90; i++) { const d = new Date(today); d.setDate(today.getDate()+i); const diff = Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), ref.getUTCDate()))/864e5);
                 if(((diff % cycle)+cycle)%cycle < activeProfile.restDays) { document.getElementById('countdown-container').textContent = i===0 ? 'Hoy descansas' : (i===1 ? 'Mañana libre' : `${i} días para descansar`); break; }
             }
+        }
+
+
+        // ══════════════════════════════════════════════════════
+        // FERIADOS CHILE
+        // ══════════════════════════════════════════════════════
+        function getChileanHolidays(year) {
+            const a = year%19, b = Math.floor(year/100), c = year%100;
+            const d = Math.floor(b/4), e = b%4, f = Math.floor((b+8)/25);
+            const g = Math.floor((b-f+1)/3), h = (19*a+b-d-g+15)%30;
+            const i = Math.floor(c/4), k = c%4, l = (32+2*e+2*i-h-k)%7;
+            const m = Math.floor((a+11*h+22*l)/451);
+            const easterMonth = Math.floor((h+l-7*m+114)/31)-1;
+            const easterDay = ((h+l-7*m+114)%31)+1;
+            const easter = new Date(year, easterMonth, easterDay);
+            const gf = new Date(easter); gf.setDate(easter.getDate()-2);
+            const hs = new Date(easter); hs.setDate(easter.getDate()-1);
+            const holidays = new Set();
+            const add = d => holidays.add(d.toISOString().slice(0,10));
+            add(new Date(year,0,1)); add(new Date(year,4,1)); add(new Date(year,4,21));
+            add(new Date(year,5,29)); add(new Date(year,6,16)); add(new Date(year,7,15));
+            add(new Date(year,8,18)); add(new Date(year,8,19)); add(new Date(year,9,12));
+            add(new Date(year,9,31)); add(new Date(year,10,1)); add(new Date(year,11,8));
+            add(new Date(year,11,25)); add(gf); add(hs);
+            return holidays;
+        }
+
+        // ══════════════════════════════════════════════════════
+        // RECONSTRUIR RECORDS DESDE VACATION DAYS (compatibilidad)
+        // ══════════════════════════════════════════════════════
+        function reconstruirVacationRecords(perfil) {
+            if (!perfil.vacationDays) perfil.vacationDays = {};
+            if (!perfil.vacationRecords) perfil.vacationRecords = [];
+            ['v15','v6'].forEach(typeKey => {
+                if (perfil.vacationRecords.find(r => r.type === typeKey)) return;
+                const dias = Object.keys(perfil.vacationDays).filter(d => perfil.vacationDays[d] === typeKey).sort();
+                if (dias.length === 0) return;
+                const lastDay = new Date(dias[dias.length-1]+'T00:00:00');
+                const returnDay = new Date(lastDay); returnDay.setDate(lastDay.getDate()+1);
+                perfil.vacationRecords.push({
+                    type: typeKey,
+                    typeName: typeKey==='v15' ? '15 Días Hábiles' : '6 Días Adicionales',
+                    startDate: dias[0],
+                    returnDate: returnDay.toISOString().slice(0,10),
+                    days: dias
+                });
+            });
+        }
+
+        // ══════════════════════════════════════════════════════
+        // PANEL VACACIONES — lógica
+        // ══════════════════════════════════════════════════════
+        let vacationTypeSheet = '15';
+        let lastVacResult = null;
+
+        function selectVacationTypeSheet(type) {
+            vacationTypeSheet = type;
+            const btn15 = document.getElementById('vac-sheet-btn-15');
+            const btn6  = document.getElementById('vac-sheet-btn-6');
+            const desc  = document.getElementById('vac-sheet-desc');
+            const box   = document.getElementById('vac-sheet-desc-box');
+            const hint  = document.getElementById('vac-days-hint');
+            const days  = document.getElementById('vac-sheet-days');
+            if (type === '15') {
+                btn15.className = 'py-4 rounded-2xl font-extrabold text-[11px] uppercase border-2 border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 transition-all';
+                btn6.className  = 'py-4 rounded-2xl font-extrabold text-[11px] uppercase border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 transition-all';
+                box.className   = 'mb-5 p-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900';
+                desc.innerHTML  = '<strong>Lunes a sábado</strong> cuentan como días hábiles.<br><strong>Domingos y feriados chilenos</strong> no cuentan.<br>Los <strong>días libres del ciclo sí se consumen</strong> como vacaciones.';
+                desc.className  = 'text-[10px] text-amber-700 dark:text-amber-300 leading-relaxed';
+                if (hint) { hint.textContent = 'Legal: 15 días'; hint.className = 'text-[9px] text-amber-500 font-bold mt-1 text-center'; }
+                if (days && parseInt(days.value) === 6) days.value = 15;
+            } else {
+                btn6.className  = 'py-4 rounded-2xl font-extrabold text-[11px] uppercase border-2 border-violet-400 bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 transition-all';
+                btn15.className = 'py-4 rounded-2xl font-extrabold text-[11px] uppercase border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 transition-all';
+                box.className   = 'mb-5 p-3 rounded-2xl bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-900';
+                desc.innerHTML  = '<strong>Días corridos</strong> desde la fecha de inicio.<br><strong>Todo cuenta</strong>: sábados, domingos, días libres del ciclo.<br>Solo se saltan los <strong>feriados chilenos</strong>.';
+                desc.className  = 'text-[10px] text-violet-700 dark:text-violet-300 leading-relaxed';
+                if (hint) { hint.textContent = 'Legal: 6 días adicionales'; hint.className = 'text-[9px] text-violet-500 font-bold mt-1 text-center'; }
+                if (days && parseInt(days.value) === 15) days.value = 6;
+            }
+            document.getElementById('vac-sheet-result').classList.add('hidden');
+        }
+
+        function ajustarDias(delta) {
+            const el = document.getElementById('vac-sheet-days');
+            el.value = Math.max(1, (parseInt(el.value) || 1) + delta);
+        }
+
+        function validarDias(el) { if (!el.value || el.value < 1) el.value = 1; }
+
+        function calcularVacaciones() {
+            const startStr = document.getElementById('vac-sheet-start').value;
+            const dias     = parseInt(document.getElementById('vac-sheet-days').value) || 0;
+            if (!startStr) { showToast('Selecciona una fecha de inicio', 'error'); return; }
+            if (dias < 1)  { showToast('Ingresa al menos 1 día', 'error'); return; }
+
+            const startDate = new Date(startStr + 'T00:00:00');
+            const typeKey   = vacationTypeSheet === '15' ? 'v15' : 'v6';
+            const typeName  = vacationTypeSheet === '15'
+                ? (dias === 15 ? '15 Días Hábiles' : `${dias} Días Hábiles`)
+                : (dias === 6  ? '6 Días Adicionales' : `${dias} Días Adicionales`);
+
+            let counted = 0, current = new Date(startDate);
+            const vacDates = [];
+
+            while (counted < dias) {
+                const dateStr = current.toISOString().slice(0, 10);
+                const dow = current.getDay();
+                const holidays = getChileanHolidays(current.getFullYear());
+                if (vacationTypeSheet === '15') {
+                    if (dow === 0 || dow === 6) { current.setDate(current.getDate()+1); continue; }
+                    if (holidays.has(dateStr))  { current.setDate(current.getDate()+1); continue; }
+                }
+                vacDates.push(dateStr);
+                counted++;
+                current.setDate(current.getDate()+1);
+            }
+
+            // Guardar días individuales
+            if (!activeProfile.vacationDays) activeProfile.vacationDays = {};
+            for (const k in activeProfile.vacationDays)
+                if (activeProfile.vacationDays[k] === typeKey) delete activeProfile.vacationDays[k];
+            vacDates.forEach(d => { activeProfile.vacationDays[d] = typeKey; });
+
+            // Guardar registro
+            if (!activeProfile.vacationRecords) activeProfile.vacationRecords = [];
+            activeProfile.vacationRecords = activeProfile.vacationRecords.filter(r => r.type !== typeKey);
+            const lastDay   = new Date(vacDates[vacDates.length-1]+'T00:00:00');
+            const returnDay = new Date(lastDay); returnDay.setDate(lastDay.getDate()+1);
+            const returnStr = returnDay.toISOString().slice(0,10);
+            activeProfile.vacationRecords.push({ type: typeKey, typeName, startDate: startStr, returnDate: returnStr, days: vacDates });
+
+            // Guardar datos para Google Calendar
+            lastVacResult = {
+                startStr, endStr: returnStr,
+                title: `🏖️ Vacaciones — ${activeProfile.name}`,
+                desc:  `${dias} días (${typeName}) — Regreso: ${returnDay.toLocaleDateString('es-CL', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}.`
+            };
+
+            saveToLocalStorage();
+            renderCurrentCalendar();
+            renderVacHistory();
+
+            document.getElementById('vac-sheet-return-date').textContent = returnDay.toLocaleDateString('es-CL', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+            document.getElementById('vac-sheet-summary').textContent = `${dias} días desde el ${startDate.toLocaleDateString('es-CL', {day:'numeric', month:'long'})}`;
+            document.getElementById('vac-sheet-result').classList.remove('hidden');
+            showToast('✅ Vacaciones calculadas');
+        }
+
+        function agregarVacacionesGoogleCalendar() {
+            if (!lastVacResult) return;
+            const { startStr, endStr, title, desc } = lastVacResult;
+            window.open(`https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startStr.replace(/-/g,'')}/${endStr.replace(/-/g,'')}&details=${encodeURIComponent(desc)}&trp=false`, '_blank');
+        }
+
+        function abrirGCalDesdeHistorial(startDate, returnDate, typeName, dias) {
+            const title = `🏖️ Vacaciones — ${activeProfile.name}`;
+            const desc  = `${dias} días (${typeName}) — Regreso: ${new Date(returnDate+'T00:00:00').toLocaleDateString('es-CL', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}.`;
+            window.open(`https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startDate.replace(/-/g,'')}/${returnDate.replace(/-/g,'')}&details=${encodeURIComponent(desc)}&trp=false`, '_blank');
+        }
+
+        function eliminarVacaciones(typeKey) {
+            if (!confirm('⚠️ ¿Eliminar este período de vacaciones?')) return;
+            activeProfile.vacationRecords = (activeProfile.vacationRecords||[]).filter(r => r.type !== typeKey);
+            for (const k in activeProfile.vacationDays)
+                if (activeProfile.vacationDays[k] === typeKey) delete activeProfile.vacationDays[k];
+            saveToLocalStorage();
+            renderCurrentCalendar();
+            renderVacHistory();
+            showToast('Vacaciones eliminadas');
+        }
+
+        function renderVacHistory() {
+            const list = document.getElementById('vac-history-list');
+            if (!list) return;
+            const records = activeProfile.vacationRecords || [];
+            if (records.length === 0) {
+                list.innerHTML = `<div class="flex flex-col items-center py-8 text-center"><div class="text-4xl mb-3">🌴</div><p class="text-xs font-bold text-slate-400">Sin vacaciones registradas</p><p class="text-[10px] text-slate-300 dark:text-slate-600 mt-1">Calcula tus vacaciones arriba</p></div>`;
+                return;
+            }
+            list.innerHTML = records.map(r => {
+                const is15      = r.type === 'v15';
+                const gradFrom  = is15 ? '#f59e0b' : '#8b5cf6';
+                const gradTo    = is15 ? '#fbbf24' : '#a78bfa';
+                const dias      = r.days ? r.days.length : (is15 ? 15 : 6);
+                const startFmt  = new Date(r.startDate+'T00:00:00').toLocaleDateString('es-CL', {weekday:'short', day:'numeric', month:'long'});
+                const returnFmt = new Date(r.returnDate+'T00:00:00').toLocaleDateString('es-CL', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+                return `
+                <div class="rounded-3xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800">
+                    <div style="background:linear-gradient(135deg,${gradFrom},${gradTo})" class="p-4 flex items-center justify-between">
+                        <div>
+                            <p class="text-[9px] font-extrabold text-white/70 uppercase tracking-widest">${r.typeName}</p>
+                            <p class="text-xl font-extrabold text-white">${dias} días</p>
+                        </div>
+                        <div class="text-3xl">🏖️</div>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-slate-800 space-y-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:${is15?'#fffbeb':'#f5f3ff'}">
+                                <svg class="w-4 h-4" style="color:${gradFrom}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Inicio</p>
+                                <p class="text-xs font-extrabold text-slate-700 dark:text-slate-200 capitalize">${startFmt}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/30">
+                                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Regreso</p>
+                                <p class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 capitalize">${returnFmt}</p>
+                            </div>
+                        </div>
+                        <button onclick="abrirGCalDesdeHistorial('${r.startDate}','${r.returnDate}','${r.typeName}',${dias})"
+                            class="w-full py-2.5 rounded-2xl text-[10px] font-extrabold uppercase text-blue-600 border border-blue-100 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/20 active:scale-95 transition-transform">
+                            📅 Agregar a Google Calendar
+                        </button>
+                        <button onclick="eliminarVacaciones('${r.type}')"
+                            class="w-full py-2.5 rounded-2xl text-[10px] font-extrabold uppercase text-rose-500 border border-rose-100 dark:border-rose-900 bg-rose-50 dark:bg-rose-900/20 active:scale-95 transition-transform">
+                            🗑️ Eliminar este período
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         window.onload = () => {
