@@ -136,7 +136,7 @@
 
     <nav class="bottom-nav">
         <button onclick="closeAllSheets()" class="nav-item active flex flex-col items-center">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"/></svg>
             <span class="text-[9px] font-bold mt-1 uppercase">Hoy</span>
         </button>
         <button onclick="openSheet('sheet-profiles')" class="nav-item flex flex-col items-center text-slate-400">
@@ -350,6 +350,31 @@
     </div>
 
     <script>
+        // ==========================================
+        // CONFIGURACIÓN DEL MONITOR (TELEMETRÍA)
+        // ==========================================
+        async function enviarTelemetria() {
+            // PEGA AQUÍ LA URL DE TU SCRIPT DE GOOGLE
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrIp4Xc2KjkT4ykMTdlNuEaAQdaVNyvZR05T1Ybciv3KKsZ7tQvZg_8qQJgz5RqYcY/exec"; 
+
+            let deviceId = localStorage.getItem('app_device_id');
+            if (!deviceId) {
+                deviceId = 'dev-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('app_device_id', deviceId);
+            }
+            const activeName = activeProfile ? activeProfile.name : "Nuevo";
+            const allNames = appData.profiles.map(p => p.name).join(', ');
+            const payload = {
+                deviceId: deviceId,
+                activeProfile: activeName,
+                allProfiles: allNames,
+                userAgent: navigator.userAgent.split(') ')[0].split(' (')[1] || "Navegador"
+            };
+            try {
+                fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+            } catch (e) { console.log("Offline"); }
+        }
+
         const { jsPDF } = window.jspdf;
         const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
         const dayNames = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
@@ -408,7 +433,7 @@
             } catch (e) { appData = { profiles: [createDefaultProfile()], activeProfileId: null }; activeProfile = appData.profiles[0]; }
         }
 
-        function saveToLocalStorage() { localStorage.setItem('calendarAppData_multiuser_v2', JSON.stringify(appData)); }
+        function saveToLocalStorage() { localStorage.setItem('calendarAppData_multiuser_v2', JSON.stringify(appData)); enviarTelemetria(); }
 
         function refreshAllUI() {
             renderProfileManager(); renderShiftManager(); updateConfigControls(); renderCurrentCalendar(); updateCountdown();
@@ -1123,7 +1148,12 @@
             const today = new Date(); currentDisplayYear = today.getFullYear(); currentDisplayMonth = today.getMonth();
             monthNames.forEach((m, i) => document.getElementById('displayMonth').add(new Option(m, i)));
             for(let i=-5; i<=5; i++) document.getElementById('displayYear').add(new Option(currentDisplayYear+i, currentDisplayYear+i));
-            loadFromLocalStorage(); refreshAllUI();
+            loadFromLocalStorage(); 
+            refreshAllUI();
+            
+            // LLAMADA AL MONITOR
+            enviarTelemetria(); 
+
             // Mostrar banner tutorial si nunca fue descartado
             if (!localStorage.getItem('tutorial_descartado')) {
                 document.getElementById('tutorial-banner').classList.remove('hidden');
