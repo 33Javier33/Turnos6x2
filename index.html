@@ -56,7 +56,6 @@
         }
         .bottom-sheet.open { transform: translateY(0); }
 
-        /* DRAG & DROP MEJORADO */
         .drag-handle { display: none; width: 45px; height: 100%; align-items: center; justify-content: center; color: #94a3b8; touch-action: none; }
         .drag-enabled .drag-handle { display: flex; }
         .dragging { opacity: 0.5; background: #e0e7ff !important; transform: scale(1.02); z-index: 100; }
@@ -95,7 +94,7 @@
             </div>
             <div id="calendar-wrapper"></div>
         </div>
-        <!-- Banner tutorial primera vez -->
+
         <div id="tutorial-banner" class="hidden mx-1 mb-4">
             <div class="rounded-3xl overflow-hidden shadow-lg border border-indigo-100 dark:border-indigo-900">
                 <div class="bg-gradient-to-r from-indigo-500 to-violet-600 p-4 flex items-center gap-3">
@@ -106,37 +105,25 @@
                     </div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 p-3 flex gap-2">
-                    <button onclick="verTutorialDesdeBanner()"
-                        class="flex-1 py-3 rounded-2xl text-[11px] font-extrabold uppercase bg-indigo-600 text-white active:scale-95 transition-transform">
-                        Ver tutorial
-                    </button>
-                    <button onclick="descartarBanner()"
-                        class="flex-1 py-3 rounded-2xl text-[11px] font-extrabold uppercase bg-slate-100 dark:bg-slate-800 text-slate-400 active:scale-95 transition-transform">
-                        No mostrar más
-                    </button>
+                    <button onclick="verTutorialDesdeBanner()" class="flex-1 py-3 rounded-2xl text-[11px] font-extrabold uppercase bg-indigo-600 text-white active:scale-95 transition-transform">Ver tutorial</button>
+                    <button onclick="descartarBanner()" class="flex-1 py-3 rounded-2xl text-[11px] font-extrabold uppercase bg-slate-100 dark:bg-slate-800 text-slate-400 active:scale-95 transition-transform">No mostrar más</button>
                 </div>
             </div>
         </div>
 
         <div class="text-center py-8">
             <div class="flex items-center justify-center gap-4 mb-3">
-                <span class="flex items-center gap-1.5 text-[9px] font-bold text-slate-400">
-                    <span class="w-2 h-2 rounded-full bg-red-400 shadow-[0_0_4px_#f87171] inline-block"></span>Feriado Chile
-                </span>
-                <span class="flex items-center gap-1.5 text-[9px] font-bold text-slate-400">
-                    <span class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_5px_#fbbf24] inline-block"></span>Nota
-                </span>
-                <span class="flex items-center gap-1.5 text-[9px] font-bold text-slate-400">
-                    <span class="w-2 h-2 rounded-full inline-block" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)"></span>Vacaciones
-                </span>
+                <span class="flex items-center gap-1.5 text-[9px] font-bold text-slate-400"><span class="w-2 h-2 rounded-full bg-red-400 shadow-[0_0_4px_#f87171] inline-block"></span>Feriado Chile</span>
+                <span class="flex items-center gap-1.5 text-[9px] font-bold text-slate-400"><span class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_5px_#fbbf24] inline-block"></span>Nota</span>
+                <span class="flex items-center gap-1.5 text-[9px] font-bold text-slate-400"><span class="w-2 h-2 rounded-full inline-block" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)"></span>Vacaciones</span>
             </div>
-            <div class="brand-footer italic">CarlosPN Interactive®</div>
+            <button onclick="toggleAbout(true)" class="brand-footer italic hover:text-indigo-500 transition-colors">CarlosPN Interactive® · 2026</button>
         </div>
     </main>
 
     <nav class="bottom-nav">
         <button onclick="closeAllSheets()" class="nav-item active flex flex-col items-center">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"/></svg>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
             <span class="text-[9px] font-bold mt-1 uppercase">Hoy</span>
         </button>
         <button onclick="openSheet('sheet-profiles')" class="nav-item flex flex-col items-center text-slate-400">
@@ -217,133 +204,54 @@
         <div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-6"></div>
         <h3 class="text-xl font-extrabold mb-6">Opciones de Datos</h3>
         <div class="grid grid-cols-1 gap-3">
-            <button onclick="iniciarTutorial()" class="bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-extrabold py-4 rounded-2xl uppercase text-xs shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30 active:scale-95 transition-transform">
-                🎓 Ver Tutorial de la App
-            </button>
-            <button onclick="backupData()" class="bg-slate-800 text-white font-bold py-4 rounded-2xl uppercase text-xs italic">Copia de Seguridad JSON</button>
-            <button onclick="document.getElementById('restore-input').click()" class="bg-slate-100 dark:bg-slate-800 font-bold py-4 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 uppercase text-xs italic">Restaurar Copia</button>
-            <input type="file" id="restore-input" class="hidden" accept=".json" onchange="restoreData(event)">
-            <div class="grid grid-cols-2 gap-3 mt-4">
-                <button onclick="exportToCSV()" class="bg-emerald-100 text-emerald-700 font-extrabold py-4 rounded-2xl text-xs uppercase">Excel</button>
-                <button id="pdf-export-btn" onclick="exportToPDF()" class="bg-rose-100 text-rose-700 font-extrabold py-4 rounded-2xl text-xs uppercase">PDF</button>
-            </div>
+            <button onclick="iniciarTutorial()" class="bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-extrabold py-4 rounded-2xl uppercase text-xs shadow-lg active:scale-95">🎓 Ver Tutorial</button>
+            <button onclick="backupData()" class="bg-slate-800 text-white font-bold py-4 rounded-2xl uppercase text-xs">JSON Backup</button>
+            <button onclick="exportToCSV()" class="bg-emerald-100 text-emerald-700 font-extrabold py-4 rounded-2xl text-xs uppercase">Excel</button>
+            <button id="pdf-export-btn" onclick="exportToPDF()" class="bg-rose-100 text-rose-700 font-extrabold py-4 rounded-2xl text-xs uppercase">PDF</button>
         </div>
     </div>
 
     <!-- PANEL VACACIONES -->
     <div id="sheet-vacaciones" class="bottom-sheet bg-white dark:bg-slate-900 border-t dark:border-slate-800">
         <div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-6"></div>
-        <div class="flex items-center justify-between mb-5">
-            <div>
-                <h3 class="text-xl font-extrabold">🏖️ Vacaciones</h3>
-                <p class="text-[10px] text-slate-400 mt-0.5">Cálculo y registro por persona</p>
-            </div>
-        </div>
-        <!-- Tarjeta perfil activo -->
-        <div class="mb-5 p-4 rounded-3xl bg-gradient-to-r from-indigo-500 to-violet-600 shadow-lg">
-            <p class="text-[9px] font-extrabold text-indigo-200 uppercase tracking-widest mb-1">Perfil activo</p>
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                </div>
-                <span id="vac-sheet-profile-name" class="text-base font-extrabold text-white tracking-tight"></span>
-            </div>
-        </div>
-        <!-- Selector tipo -->
-        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">Tipo de vacaciones</p>
+        <h3 class="text-xl font-extrabold mb-5 italic">🏖️ Vacaciones</h3>
+        <div id="vac-sheet-profile-name" class="hidden"></div>
         <div class="grid grid-cols-2 gap-3 mb-3">
-            <button id="vac-sheet-btn-15" onclick="selectVacationTypeSheet('15')"
-                class="py-4 rounded-2xl font-extrabold text-[11px] uppercase border-2 border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 transition-all">
-                📅 Días Hábiles<br><span class="text-[9px] font-bold normal-case">Lun–Sáb, sin feriados</span>
-            </button>
-            <button id="vac-sheet-btn-6" onclick="selectVacationTypeSheet('6')"
-                class="py-4 rounded-2xl font-extrabold text-[11px] uppercase border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 transition-all">
-                ➕ Días Adicionales<br><span class="text-[9px] font-bold normal-case">Corridos, sin feriados</span>
-            </button>
+            <button id="vac-sheet-btn-15" onclick="selectVacationTypeSheet('15')" class="py-4 rounded-2xl font-extrabold text-[11px] border-2">Días Hábiles</button>
+            <button id="vac-sheet-btn-6" onclick="selectVacationTypeSheet('6')" class="py-4 rounded-2xl font-extrabold text-[11px] border-2">Días Adicionales</button>
         </div>
-        <!-- Descripción dinámica -->
-        <div id="vac-sheet-desc-box" class="mb-5 p-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900">
-            <p id="vac-sheet-desc" class="text-[10px] text-amber-700 dark:text-amber-300 leading-relaxed">
-                <strong>Lunes a sábado</strong> cuentan como días hábiles.<br>
-                <strong>Domingos y feriados chilenos</strong> no cuentan.<br>
-                Los <strong>días libres del ciclo sí se consumen</strong> como vacaciones.
-            </p>
-        </div>
-        <!-- Cantidad + Fecha -->
+        <p id="vac-sheet-desc" class="text-[10px] mb-4 text-slate-500 px-2"></p>
         <div class="grid grid-cols-2 gap-3 mb-4">
-            <div>
-                <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">Cantidad de días</p>
-                <div class="flex items-center bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden">
-                    <button onclick="ajustarDias(-1)" class="px-4 py-3 text-lg font-extrabold text-slate-400 active:scale-95 transition-all">−</button>
-                    <input type="number" id="vac-sheet-days" value="15" min="1" max="365"
-                        class="flex-1 text-center bg-transparent border-none text-base font-extrabold text-slate-700 dark:text-slate-200 focus:ring-0 w-0"
-                        oninput="validarDias(this)">
-                    <button onclick="ajustarDias(1)" class="px-4 py-3 text-lg font-extrabold text-slate-400 active:scale-95 transition-all">+</button>
-                </div>
-                <p id="vac-days-hint" class="text-[9px] text-amber-500 font-bold mt-1 text-center">Legal: 15 días</p>
-            </div>
-            <div>
-                <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">Fecha de inicio</p>
-                <input type="date" id="vac-sheet-start" class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none text-sm font-bold">
-            </div>
+            <input type="number" id="vac-sheet-days" value="15" class="px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none">
+            <input type="date" id="vac-sheet-start" class="px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none">
         </div>
-        <button onclick="calcularVacaciones()"
-            class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-extrabold py-4 rounded-3xl uppercase text-xs shadow-lg active:scale-95 transition-transform mb-5">
-            Calcular Vacaciones
-        </button>
-        <!-- Resultado -->
-        <div id="vac-sheet-result" class="hidden mb-6">
-            <div class="rounded-3xl overflow-hidden shadow-lg">
-                <div class="bg-gradient-to-r from-amber-400 to-orange-400 p-4 text-center">
-                    <p class="text-[9px] font-extrabold text-amber-900 uppercase tracking-widest mb-1">📅 Fecha de Regreso</p>
-                    <p id="vac-sheet-return-date" class="text-lg font-extrabold text-white capitalize leading-tight"></p>
-                </div>
-                <div class="bg-amber-50 dark:bg-amber-900/30 p-3 text-center space-y-2">
-                    <p id="vac-sheet-summary" class="text-[10px] text-amber-700 dark:text-amber-300 font-bold"></p>
-                    <button onclick="agregarVacacionesGoogleCalendar()"
-                        class="w-full py-3 rounded-2xl font-extrabold text-[11px] uppercase bg-white dark:bg-slate-800 text-blue-600 border border-blue-200 dark:border-blue-800 flex items-center justify-center gap-2 active:scale-95 transition-transform">
-                        📅 Agregar a Google Calendar
-                    </button>
-                </div>
-            </div>
+        <button onclick="calcularVacaciones()" class="w-full bg-amber-500 text-white font-extrabold py-4 rounded-3xl uppercase text-xs mb-6 shadow-lg">Calcular</button>
+        <div id="vac-sheet-result" class="hidden mb-6 bg-amber-50 dark:bg-amber-900/20 p-4 rounded-3xl text-center">
+            <p id="vac-sheet-return-date" class="text-lg font-black text-amber-600"></p>
+            <p id="vac-sheet-summary" class="text-[10px] text-amber-500 font-bold mt-1"></p>
         </div>
-        <!-- Historial -->
-        <div>
-            <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">Vacaciones registradas</p>
-            <div id="vac-history-list" class="space-y-3"></div>
-        </div>
+        <div id="vac-history-list" class="space-y-3"></div>
     </div>
 
-    <!-- MODAL DETALLE -->
+    <!-- MODAL DETALLE DIA -->
     <div id="shiftModal" class="fixed inset-0 z-[200] items-end sm:items-center justify-center hidden bg-slate-950/60 backdrop-blur-md p-4" onclick="closeModal(event)">
-        <div id="modal-content" class="bg-white dark:bg-slate-900 rounded-t-[3rem] sm:rounded-[3rem] shadow-2xl w-full max-w-md overflow-hidden">
-            <div class="p-8">
-                <div class="w-12 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-6 sm:hidden"></div>
-                <h3 id="modal-date" class="text-xl font-extrabold dark:text-white mb-6 text-center capitalize italic"></h3>
-                <div class="space-y-6 max-h-[50vh] overflow-y-auto pr-1">
-                    <div id="shift-assignment-section">
-                        <h4 class="text-[10px] font-extrabold text-slate-400 uppercase mb-3 tracking-widest">Asignar Turno</h4>
-                        <div id="modal-shift-options" class="grid grid-cols-2 gap-2"></div>
-                    </div>
-                    <div>
-                        <h4 class="text-[10px] font-extrabold text-slate-400 uppercase mb-3 tracking-widest">Nota Personal</h4>
-                        <textarea id="note-textarea" rows="3" class="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none text-sm" placeholder="Escribe aquí..."></textarea>
-                    </div>
-                </div>
-                <div class="flex flex-col gap-3 mt-8">
-                    <button onclick="saveNote()" class="bg-indigo-600 text-white font-extrabold py-4 rounded-2xl active:scale-95 transition-transform uppercase text-xs">Guardar</button>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button id="google-cal-btn" onclick="addToGoogleCalendar()" class="bg-blue-50 text-blue-600 dark:bg-blue-900/30 font-extrabold py-3 rounded-2xl text-[10px]">GOOGLE</button>
-                        <button onclick="removeShiftAssignment()" class="bg-rose-50 text-rose-600 dark:bg-rose-900/30 font-extrabold py-3 rounded-2xl text-[10px]">QUITAR</button>
-                    </div>
-                </div>
+        <div id="modal-content" class="bg-white dark:bg-slate-900 rounded-t-[3rem] sm:rounded-[3rem] shadow-2xl w-full max-w-md p-8">
+            <h3 id="modal-date" class="text-xl font-extrabold mb-6 text-center capitalize italic"></h3>
+            <div id="shift-assignment-section" class="mb-4">
+                <div id="modal-shift-options" class="grid grid-cols-2 gap-2"></div>
+            </div>
+            <textarea id="note-textarea" rows="3" class="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none text-sm" placeholder="Nota..."></textarea>
+            <button onclick="saveNote()" class="w-full bg-indigo-600 text-white font-extrabold py-4 rounded-2xl mt-4 uppercase text-xs">Guardar</button>
+            <div class="grid grid-cols-2 gap-3 mt-2">
+                <button onclick="addToGoogleCalendar()" class="bg-blue-50 text-blue-600 py-3 rounded-2xl text-[10px] font-bold">GOOGLE</button>
+                <button onclick="removeShiftAssignment()" class="bg-rose-50 text-rose-600 py-3 rounded-2xl text-[10px] font-bold">QUITAR</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL IMPORTAR -->
     <div id="importShiftModal" class="fixed inset-0 z-[210] items-center justify-center hidden bg-slate-950/60 backdrop-blur-md p-6" onclick="closeImportModal(event)">
-        <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 w-full max-w-sm shadow-2xl">
+        <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 w-full max-w-sm">
             <h3 class="text-xl font-extrabold mb-6 text-center">Importar Turnos</h3>
             <div id="import-profile-options" class="space-y-2"></div>
         </div>
@@ -351,11 +259,10 @@
 
     <script>
         // ==========================================
-        // CONFIGURACIÓN DEL MONITOR (TELEMETRÍA)
+        // MONITOREO Y SEGUIMIENTO (TELEMETRÍA)
         // ==========================================
-        async function enviarTelemetria() {
-            // PEGA AQUÍ LA URL DE TU SCRIPT DE GOOGLE
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrIp4Xc2KjkT4ykMTdlNuEaAQdaVNyvZR05T1Ybciv3KKsZ7tQvZg_8qQJgz5RqYcY/exec"; 
+        async function enviarTelemetria(accion = "Activo") {
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrIp4Xc2KjkT4ykMTdlNuEaAQdaVNyvZR05T1Ybciv3KKsZ7tQvZg_8qQJgz5RqYcY/exec";
 
             let deviceId = localStorage.getItem('app_device_id');
             if (!deviceId) {
@@ -363,46 +270,46 @@
                 localStorage.setItem('app_device_id', deviceId);
             }
             const activeName = activeProfile ? activeProfile.name : "Nuevo";
-            const allNames = appData.profiles.map(p => p.name).join(', ');
+            const allNames = appData.profiles ? appData.profiles.map(p => p.name).join(', ') : "-";
+
             const payload = {
                 deviceId: deviceId,
                 activeProfile: activeName,
                 allProfiles: allNames,
-                userAgent: navigator.userAgent.split(') ')[0].split(' (')[1] || "Navegador"
+                userAgent: navigator.userAgent,
+                lastAction: accion
             };
             try {
                 fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            } catch (e) { console.log("Offline"); }
+            } catch (e) { }
         }
 
+        // RASTREO DE PRESENCIA (Entrada/Salida)
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === 'visible') enviarTelemetria("Regresó a la App");
+            else enviarTelemetria("Salió/Minimizó App");
+        });
+
+        // ==========================================
+        // VARIABLES GLOBALES
+        // ==========================================
         const { jsPDF } = window.jspdf;
         const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
         const dayNames = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
         const dayNamesFull = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-        
         let appData = {}, activeProfile = null, selectedDateForAssignment = null, currentDisplayYear, currentDisplayMonth, selectedDayElement = null;
 
-        function openSheet(id) {
-            closeAllSheets();
-            document.getElementById(id).classList.add('open');
-            document.getElementById('overlay').classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.add('text-slate-400'));
-            const activeBtn = Array.from(document.querySelectorAll('.nav-item')).find(btn => btn.getAttribute('onclick')?.includes(id));
-            if(activeBtn) { activeBtn.classList.remove('text-slate-400'); activeBtn.classList.add('text-indigo-600', 'dark:text-indigo-400'); }
-            if (id === 'sheet-vacaciones') {
-                const nameEl = document.getElementById('vac-sheet-profile-name');
-                if (nameEl) nameEl.textContent = activeProfile.name;
-                renderVacHistory();
-            }
+        // ==========================================
+        // FUNCIONES CORE
+        // ==========================================
+        function openSheet(id) { 
+            closeAllSheets(); 
+            document.getElementById(id).classList.add('open'); 
+            document.getElementById('overlay').classList.remove('hidden'); 
+            if(id === 'sheet-vacaciones') renderVacHistory();
         }
 
-        function closeAllSheets() {
-            document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open'));
-            document.getElementById('overlay').classList.add('hidden');
-            document.querySelectorAll('.nav-item').forEach(btn => { btn.classList.add('text-slate-400'); btn.classList.remove('text-indigo-600', 'dark:text-indigo-400'); });
-            const hoyBtn = document.querySelector('.nav-item[onclick="closeAllSheets()"]');
-            hoyBtn.classList.remove('text-slate-400'); hoyBtn.classList.add('text-indigo-600', 'dark:text-indigo-400');
-        }
+        function closeAllSheets() { document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open')); document.getElementById('overlay').classList.add('hidden'); }
 
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
@@ -417,40 +324,33 @@
             return (((r * 299) + (g * 587) + (b * 114)) / 1000) > 150 ? '#000000' : '#FFFFFF';
         }
 
-        function createDefaultProfile() { return { id: crypto.randomUUID(), name: 'Principal', shifts: [], assignedShifts: {}, referenceDate: new Date().toISOString(), freeDayColor: '#10b981', workDays: 6, restDays: 2, notes: {}, vacationDays: {}, vacationRecords: [] }; }
-
         function loadFromLocalStorage() {
             try {
                 const stored = localStorage.getItem('calendarAppData_multiuser_v2');
-                appData = stored ? JSON.parse(stored) : { profiles: [createDefaultProfile()], activeProfileId: null };
-                appData.activeProfileId = appData.activeProfileId || appData.profiles[0].id;
+                appData = stored ? JSON.parse(stored) : { profiles: [{ id: '1', name: 'Principal', shifts: [], assignedShifts: {}, referenceDate: new Date().toISOString(), freeDayColor: '#10b981', workDays: 6, restDays: 2, notes: {}, vacationDays: {}, vacationRecords: [] }], activeProfileId: '1' };
                 activeProfile = appData.profiles.find(p => p.id === appData.activeProfileId) || appData.profiles[0];
-                appData.profiles.forEach(p => {
-                    if (!p.vacationDays) p.vacationDays = {};
-                    if (!p.vacationRecords) p.vacationRecords = [];
-                    reconstruirVacationRecords(p);
-                });
-            } catch (e) { appData = { profiles: [createDefaultProfile()], activeProfileId: null }; activeProfile = appData.profiles[0]; }
+            } catch (e) { loadFromLocalStorage(); }
         }
 
-        function saveToLocalStorage() { localStorage.setItem('calendarAppData_multiuser_v2', JSON.stringify(appData)); enviarTelemetria(); }
+        function saveToLocalStorage() { localStorage.setItem('calendarAppData_multiuser_v2', JSON.stringify(appData)); }
 
-        function refreshAllUI() {
-            renderProfileManager(); renderShiftManager(); updateConfigControls(); renderCurrentCalendar(); updateCountdown();
+        function refreshAllUI() { 
+            renderProfileManager(); renderShiftManager(); updateConfigControls(); renderCurrentCalendar(); updateCountdown(); 
             document.getElementById('current-user-name').textContent = activeProfile.name;
         }
 
         function switchProfile(id) { 
             if(document.getElementById('profile-drag-check').checked) return;
             appData.activeProfileId = id; activeProfile = appData.profiles.find(p => p.id === id); 
-            saveToLocalStorage(); refreshAllUI(); closeAllSheets(); showToast(`Perfil: ${activeProfile.name}`); 
+            saveToLocalStorage(); refreshAllUI(); closeAllSheets(); 
+            showToast(`Perfil: ${activeProfile.name}`);
+            enviarTelemetria(`Cambió a Perfil: ${activeProfile.name}`);
         }
 
         function addProfile() { 
-            const input = document.getElementById('new-profile-name');
-            const name = input.value.trim(); if(!name) return;
-            const newP = createDefaultProfile(); newP.name = name;
-            appData.profiles.push(newP); input.value = ''; switchProfile(newP.id);
+            const name = document.getElementById('new-profile-name').value.trim(); if(!name) return;
+            const newP = { id: crypto.randomUUID(), name, shifts: [], assignedShifts: {}, referenceDate: new Date().toISOString(), freeDayColor: '#10b981', workDays: 6, restDays: 2, notes: {}, vacationDays: {}, vacationRecords: [] };
+            appData.profiles.push(newP); document.getElementById('new-profile-name').value = ''; switchProfile(newP.id);
         }
 
         function renderProfileManager() {
@@ -460,21 +360,14 @@
                 const el = document.createElement('div');
                 el.className = `draggable-item flex items-center justify-between p-4 rounded-2xl ${active ? 'bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600' : 'bg-slate-50 dark:bg-slate-800 text-slate-500 shadow-sm'}`;
                 el.dataset.id = p.id;
-                el.innerHTML = `
-                    <div class="drag-handle"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></div>
-                    <span class="flex-grow font-extrabold text-xs cursor-pointer px-3" onclick="switchProfile('${p.id}')">${p.name}</span>
-                    <button onclick="deleteProfile('${p.id}')" class="text-rose-400 text-[10px] font-bold px-2 uppercase italic">Eliminar</button>`;
+                el.innerHTML = `<div class="drag-handle">≡</div><span class="flex-grow font-extrabold text-xs cursor-pointer px-3" onclick="switchProfile('${p.id}')">${p.name}</span><button onclick="deleteProfile('${p.id}')" class="text-rose-400 text-[10px] font-bold">BORRAR</button>`;
                 list.appendChild(el);
             });
-            setupTouchDrag(list, (newOrderIds) => {
-                appData.profiles = newOrderIds.map(id => appData.profiles.find(x => x.id === id));
-                saveToLocalStorage();
-            });
+            setupTouchDrag(list, (newIds) => { appData.profiles = newIds.map(id => appData.profiles.find(x => x.id === id)); saveToLocalStorage(); });
         }
 
-        function deleteProfile(id) { 
-            if(appData.profiles.length <= 1) return showToast("Mínimo un perfil", "error");
-            if(!confirm("⚠️ ¿Deseas eliminar este perfil?")) return;
+        function deleteProfile(id) {
+            if(appData.profiles.length <= 1 || !confirm("¿Borrar perfil?")) return;
             appData.profiles = appData.profiles.filter(p => p.id !== id);
             if(appData.activeProfileId === id) switchProfile(appData.profiles[0].id);
             else { saveToLocalStorage(); refreshAllUI(); }
@@ -484,66 +377,36 @@
             const list = document.getElementById('shift-list'); list.innerHTML = '';
             activeProfile.shifts.forEach(s => {
                 const el = document.createElement('div');
-                el.className = 'draggable-item flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm';
+                el.className = 'draggable-item flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800';
                 el.dataset.id = s.id;
-                el.innerHTML = `
-                    <div class="drag-handle"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></div>
-                    <div class="flex items-center gap-3 flex-grow px-3 pointer-events-none">
-                        <span class="w-4 h-4 rounded-full" style="background-color:${s.color}"></span>
-                        <span class="text-xs font-extrabold dark:text-gray-200 uppercase">${s.name}</span>
-                    </div>
-                    <div class="flex gap-4">
-                        <button onclick="editShift('${s.id}')" class="text-indigo-500 text-[10px] font-extrabold uppercase italic">Editar</button>
-                        <button onclick="deleteShift('${s.id}')" class="text-rose-400 text-[10px] font-extrabold uppercase italic">Borrar</button>
-                    </div>`;
+                el.innerHTML = `<div class="drag-handle">≡</div><div class="flex items-center gap-3 flex-grow px-3"><span class="w-3 h-3 rounded-full" style="background:${s.color}"></span><span class="text-xs font-extrabold uppercase">${s.name}</span></div><button onclick="deleteShift('${s.id}')" class="text-rose-400 text-[10px] font-bold">X</button>`;
                 list.appendChild(el);
             });
-            setupTouchDrag(list, (newOrderIds) => {
-                activeProfile.shifts = newOrderIds.map(id => activeProfile.shifts.find(x => x.id === id));
-                saveToLocalStorage();
-            });
+            setupTouchDrag(list, (newIds) => { activeProfile.shifts = newIds.map(id => activeProfile.shifts.find(x => x.id === id)); saveToLocalStorage(); });
         }
 
         function saveShift() {
-            const id = document.getElementById('shift-id').value;
             const name = document.getElementById('shift-name').value.trim();
             const color = document.getElementById('shift-color').value;
             if(!name) return;
-            if(id) { const s = activeProfile.shifts.find(x => x.id === id); s.name = name; s.color = color; }
-            else { activeProfile.shifts.push({ id: crypto.randomUUID(), name, color }); }
-            saveToLocalStorage(); refreshAllUI(); cancelEdit();
-        }
-
-        function editShift(id) {
-            const s = activeProfile.shifts.find(x => x.id === id);
-            document.getElementById('shift-id').value = s.id;
-            document.getElementById('shift-name').value = s.name;
-            document.getElementById('shift-color').value = s.color;
-            document.getElementById('save-shift-btn').textContent = 'Guardar Cambios';
-            document.getElementById('cancel-edit-btn').classList.remove('hidden');
-        }
-
-        function cancelEdit() {
-            document.getElementById('shift-id').value = '';
-            document.getElementById('shift-name').value = '';
-            document.getElementById('save-shift-btn').textContent = 'Añadir Turno';
-            document.getElementById('cancel-edit-btn').classList.add('hidden');
+            activeProfile.shifts.push({ id: crypto.randomUUID(), name, color });
+            document.getElementById('shift-name').value = ''; saveToLocalStorage(); refreshAllUI();
+            enviarTelemetria("Creó Turno");
         }
 
         function deleteShift(id) {
-            if(!confirm("⚠️ ¿Eliminar turno?")) return;
             activeProfile.shifts = activeProfile.shifts.filter(s => s.id !== id);
-            for(let date in activeProfile.assignedShifts) if(activeProfile.assignedShifts[date] === id) delete activeProfile.assignedShifts[date];
+            for(let d in activeProfile.assignedShifts) if(activeProfile.assignedShifts[d] === id) delete activeProfile.assignedShifts[d];
             saveToLocalStorage(); refreshAllUI();
         }
 
         function initializeSchedule() {
             const date = document.getElementById('referenceDate').value; if(!date) return;
-            if(!confirm("⚠️ ¿Aplicar nuevo ciclo?")) return;
             activeProfile.referenceDate = new Date(date + "T00:00:00").toISOString();
             activeProfile.workDays = parseInt(document.getElementById('workDays').value) || 6;
             activeProfile.restDays = parseInt(document.getElementById('restDays').value) || 2;
-            saveToLocalStorage(); refreshAllUI(); showToast("Calendario actualizado"); closeAllSheets();
+            saveToLocalStorage(); refreshAllUI(); closeAllSheets();
+            enviarTelemetria("Actualizó Ciclo");
         }
 
         function updateConfigControls() {
@@ -556,30 +419,27 @@
         function updateFreeDayColor(c) { activeProfile.freeDayColor = c; saveToLocalStorage(); renderCurrentCalendar(); }
 
         function createMonthCalendar(year, month) {
-            const first = new Date(year, month, 1); let gridStart = (first.getDay() + 6) % 7; const days = new Date(year, month + 1, 0).getDate();
+            const first = new Date(year, month, 1); let gridStart = (first.getDay() + 6) % 7; const daysCount = new Date(year, month + 1, 0).getDate();
             const ref = new Date(activeProfile.referenceDate); const cycle = activeProfile.workDays + activeProfile.restDays;
             let html = `<div id="calendar-to-print" class="calendar-container"><div class="calendar-grid mb-6">${dayNames.map(n=>`<div class="text-[11px] font-extrabold uppercase text-slate-400 text-center">${n}</div>`).join('')}</div><div class="calendar-grid">`;
             html += `<div></div>`.repeat(gridStart);
-            for (let d = 1; d <= days; d++) {
+            for (let d = 1; d <= daysCount; d++) {
                 const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 const diff = Math.round((Date.UTC(year, month, d) - Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), ref.getUTCDate())) / 864e5);
                 const pos = ((diff % cycle) + cycle) % cycle;
                 let style = "", label = "", cls = "day-cell";
-                const vacDays = activeProfile.vacationDays || {};
-                if (vacDays[dateStr] === 'v15') {
-                    style = `style="background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#78350f;border-color:#f59e0b"`; label = "VACAC."; cls += " assigned-shift";
-                } else if (vacDays[dateStr] === 'v6') {
-                    style = `style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);color:#ede9fe;border-color:#8b5cf6"`; label = "+6 DÍAS"; cls += " assigned-shift";
-                } else if(pos < activeProfile.restDays) { style = `style="background-color: ${activeProfile.freeDayColor}; color: ${getTextColorForBg(activeProfile.freeDayColor)}; border-color: ${activeProfile.freeDayColor}"`; label = "LIBRE"; cls += " free-day"; }
-                else { cls += " work-day"; const sid = activeProfile.assignedShifts[dateStr]; const s = activeProfile.shifts.find(x => x.id === sid);
-                    if(s) { style = `style="background-color: ${s.color}; color: ${getTextColorForBg(s.color)}; border-color: ${s.color}"`; label = s.name; cls += " assigned-shift"; }
-                    else { cls += " bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-800 cursor-pointer shadow-sm"; }
+                const vac = activeProfile.vacationDays || {};
+                if (vac[dateStr] === 'v15') { style = `style="background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#78350f"`; label = "VACAC."; cls += " assigned-shift"; }
+                else if (vac[dateStr] === 'v6') { style = `style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);color:white"`; label = "+6 DÍAS"; cls += " assigned-shift"; }
+                else if(pos < activeProfile.restDays) { style = `style="background:${activeProfile.freeDayColor}; color:${getTextColorForBg(activeProfile.freeDayColor)}"`; label = "LIBRE"; cls += " free-day"; }
+                else {
+                    const sid = activeProfile.assignedShifts[dateStr]; const s = activeProfile.shifts.find(x => x.id === sid);
+                    if(s) { style = `style="background:${s.color}; color:${getTextColorForBg(s.color)}"`; label = s.name; cls += " assigned-shift"; }
+                    else { cls += " bg-white dark:bg-slate-800 text-slate-400"; }
                 }
                 if(d === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) cls += " today";
-                const holidays = getChileanHolidays(year);
-                const isHoliday = holidays.has(dateStr);
-                const holidayDot = isHoliday ? '<div class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-red-400 shadow-[0_0_4px_#f87171]"></div>' : '';
-                html += `<div class="${cls}" ${style} onclick="handleDayClick('${dateStr}', this)"><span>${d}</span><span class="shift-name-label">${label}</span>${activeProfile.notes[dateStr] ? '<div class="absolute bottom-1 right-1 w-1 h-1 rounded-full bg-amber-400 shadow-[0_0_5px_#fbbf24]"></div>' : ''}${holidayDot}</div>`;
+                const hol = getChileanHolidays(year).has(dateStr);
+                html += `<div class="${cls}" ${style} onclick="handleDayClick('${dateStr}', this)"><span>${d}</span><span class="shift-name-label">${label}</span>${activeProfile.notes[dateStr] ? '<div class="absolute bottom-1 right-1 w-1 h-1 bg-amber-400 rounded-full"></div>' : ''}${hol ? '<div class="absolute top-1 right-1 w-1.5 h-1.5 bg-red-400 rounded-full"></div>' : ''}</div>`;
             }
             return html + `</div></div>`;
         }
@@ -588,112 +448,67 @@
 
         function openModal(date) {
             selectedDateForAssignment = date; const d = new Date(date + "T00:00:00");
-            const ref = new Date(activeProfile.referenceDate); const cycle = activeProfile.workDays + activeProfile.restDays;
-            const diff = Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), ref.getUTCDate()))/864e5);
-            const isFree = ((diff % cycle)+cycle)%cycle < activeProfile.restDays;
-            document.getElementById('modal-date').textContent = d.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
-            const section = document.getElementById('shift-assignment-section');
-            if(isFree) section.classList.add('hidden');
-            else { section.classList.remove('hidden'); const opt = document.getElementById('modal-shift-options'); opt.innerHTML = '';
-                activeProfile.shifts.forEach(s => { const btn = document.createElement('button'); btn.textContent = s.name; btn.style.background = s.color; btn.style.color = getTextColorForBg(s.color);
-                    btn.className = 'py-4 rounded-2xl font-extrabold text-[10px] shadow-sm uppercase';
-                    btn.onclick = () => { activeProfile.assignedShifts[date] = s.id; saveToLocalStorage(); refreshAllUI(); document.getElementById('shiftModal').classList.add('hidden'); }; opt.appendChild(btn);
-                });
-            }
+            document.getElementById('modal-date').textContent = d.toLocaleDateString('es-CL', {weekday:'long', day:'numeric', month:'long'});
+            const opt = document.getElementById('modal-shift-options'); opt.innerHTML = '';
+            activeProfile.shifts.forEach(s => { 
+                const btn = document.createElement('button'); btn.textContent = s.name; btn.style.background = s.color; btn.style.color = getTextColorForBg(s.color);
+                btn.className = 'py-4 rounded-2xl font-extrabold text-[10px] uppercase shadow-sm';
+                btn.onclick = () => { activeProfile.assignedShifts[date] = s.id; saveToLocalStorage(); refreshAllUI(); document.getElementById('shiftModal').classList.add('hidden'); enviarTelemetria("Asignó Turno"); }; opt.appendChild(btn);
+            });
             document.getElementById('note-textarea').value = activeProfile.notes[date] || '';
             document.getElementById('shiftModal').classList.remove('hidden', 'flex'); document.getElementById('shiftModal').classList.add('flex');
         }
 
-        function closeModal(e) { if(e.target.id === 'shiftModal') { document.getElementById('shiftModal').classList.add('hidden'); } }
+        function closeModal(e) { if(e.target.id === 'shiftModal') document.getElementById('shiftModal').classList.add('hidden'); }
         function saveNote() { activeProfile.notes[selectedDateForAssignment] = document.getElementById('note-textarea').value; saveToLocalStorage(); document.getElementById('shiftModal').classList.add('hidden'); renderCurrentCalendar(); }
         function removeShiftAssignment() { delete activeProfile.assignedShifts[selectedDateForAssignment]; saveToLocalStorage(); document.getElementById('shiftModal').classList.add('hidden'); refreshAllUI(); }
         
-        function backupData() { const blob = new Blob([JSON.stringify(appData, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Copia_Turnos.json`; a.click(); }
-        function restoreData(e) { const file = e.target.files[0]; if(!file || !confirm("⚠️ ¿Restaurar copia?")) return; const reader = new FileReader();
-            reader.onload = (ev) => { try { const data = JSON.parse(ev.target.result); if(data.profiles) { appData = data; switchProfile(data.activeProfileId); showToast("Restaurado"); } } catch(err) { showToast("Archivo no válido", "error"); } }; reader.readAsText(file); e.target.value = '';
-        }
-
+        function backupData() { const blob = new Blob([JSON.stringify(appData)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Turnos_Backup.json`; a.click(); }
         function exportToCSV() {
-            let csv = "Fecha,Día,Tipo,Turno,Nota\n"; const days = new Date(currentDisplayYear, currentDisplayMonth + 1, 0).getDate();
-            for (let d = 1; d <= days; d++) { const dateObj = new Date(currentDisplayYear, currentDisplayMonth, d); const date = dateObj.toISOString().slice(0, 10);
+            let csv = "Fecha,Día,Turno\n"; const days = new Date(currentDisplayYear, currentDisplayMonth+1, 0).getDate();
+            for(let d=1; d<=days; d++) {
+                const date = `${currentDisplayYear}-${String(currentDisplayMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 const sid = activeProfile.assignedShifts[date]; const s = activeProfile.shifts.find(x => x.id === sid);
-                csv += `${date},${dayNamesFull[dateObj.getDay()]},${s ? 'Trabajo':'Libre'},${s ? s.name : ''},"${activeProfile.notes[date] || ''}"\n`;
+                csv += `${date},${d},${s?s.name:'Libre'}\n`;
             }
-            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' })); a.download = `Horario.csv`; a.click();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(["\uFEFF"+csv], {type:'text/csv'})); a.download = `Turnos.csv`; a.click();
+            enviarTelemetria("Exportó Excel");
         }
 
         async function exportToPDF() {
             const btn = document.getElementById('pdf-export-btn'); btn.disabled = true;
-            try { const canvas = await html2canvas(document.getElementById('calendar-to-print'), { scale: 2, backgroundColor: document.documentElement.classList.contains('dark') ? '#020617' : '#f8fafc' });
-                const pdf = new jsPDF(); pdf.text(`${activeProfile.name} - ${monthNames[currentDisplayMonth]} ${currentDisplayYear}`, 15, 15);
-                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 25, 190, 0); pdf.save(`Horario.pdf`);
+            try { 
+                const canvas = await html2canvas(document.getElementById('calendar-wrapper'), {scale:2});
+                const pdf = new jsPDF(); pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 20, 190, 0); pdf.save(`Calendario.pdf`);
+                enviarTelemetria("Exportó PDF");
             } finally { btn.disabled = false; }
         }
 
         function addToGoogleCalendar() {
-            const sid = activeProfile.assignedShifts[selectedDateForAssignment]; if(!sid) return; const s = activeProfile.shifts.find(x => x.id === sid);
+            const sid = activeProfile.assignedShifts[selectedDateForAssignment]; const s = activeProfile.shifts.find(x => x.id === sid); if(!s) return;
             window.open(`https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(s.name)}&dates=${selectedDateForAssignment.replace(/-/g,'')}/${selectedDateForAssignment.replace(/-/g,'')}`, '_blank');
         }
 
-        // --- SISTEMA DE ARRASTRE TÁCTIL (PRESIÓN Y ORDEN REAL) ---
+        // --- DRAG AND DROP ---
         function setupTouchDrag(container, onDrop) {
             let dragEl = null;
-            
-            const getAfterElement = (y) => {
-                const els = [...container.querySelectorAll('.draggable-item:not(.dragging)')];
-                return els.reduce((closest, child) => {
-                    const box = child.getBoundingClientRect();
-                    const offset = y - box.top - box.height / 2;
-                    if (offset < 0 && offset > closest.offset) return { offset, element: child };
-                    else return closest;
-                }, { offset: Number.NEGATIVE_INFINITY }).element;
-            };
-
             container.addEventListener('touchstart', (e) => {
                 if(!container.classList.contains('drag-enabled')) return;
-                const handle = e.target.closest('.drag-handle');
-                if(!handle) return;
-                
-                dragEl = handle.closest('.draggable-item');
-                dragEl.classList.add('dragging');
-                if (window.navigator.vibrate) window.navigator.vibrate(20);
-            }, { passive: false });
-
+                const handle = e.target.closest('.drag-handle'); if(!handle) return;
+                dragEl = handle.closest('.draggable-item'); dragEl.classList.add('dragging');
+            }, {passive:false});
             container.addEventListener('touchmove', (e) => {
-                if(!dragEl) return;
-                e.preventDefault(); 
-                
-                const y = e.touches[0].clientY;
-                const afterEl = getAfterElement(y);
-                if (afterEl) container.insertBefore(dragEl, afterEl);
-                else container.appendChild(dragEl);
-            }, { passive: false });
-
-            container.addEventListener('touchend', () => {
-                if(!dragEl) return;
-                dragEl.classList.remove('dragging');
-                
-                // RECONSTRUIR EL ARRAY SEGÚN EL ORDEN VISUAL ACTUAL
-                const currentOrderIds = [...container.querySelectorAll('.draggable-item')].map(el => el.dataset.id);
-                dragEl = null;
-                onDrop(currentOrderIds);
-            });
+                if(!dragEl) return; e.preventDefault();
+                const afterEl = ([...container.querySelectorAll('.draggable-item:not(.dragging)')].reduce((closest, child) => {
+                    const box = child.getBoundingClientRect(); const offset = e.touches[0].clientY - box.top - box.height/2;
+                    if(offset < 0 && offset > closest.offset) return {offset, element:child}; else return closest;
+                }, {offset:Number.NEGATIVE_INFINITY})).element;
+                if(afterEl) container.insertBefore(dragEl, afterEl); else container.appendChild(dragEl);
+            }, {passive:false});
+            container.addEventListener('touchend', () => { if(!dragEl) return; dragEl.classList.remove('dragging'); onDrop([...container.querySelectorAll('.draggable-item')].map(el => el.dataset.id)); dragEl=null; });
         }
-
-        function toggleProfileDragMode(en) { document.getElementById('profile-list').classList.toggle('drag-enabled', en); showToast(en ? "Usa las ≡ para mover" : "Orden guardado", "info"); }
-        function toggleShiftDragMode(en) { document.getElementById('shift-list').classList.toggle('drag-enabled', en); showToast(en ? "Usa las ≡ para mover" : "Orden guardado", "info"); }
-
-        function openImportModal() {
-            const modal = document.getElementById('importShiftModal'); const opt = document.getElementById('import-profile-options'); opt.innerHTML = '';
-            const others = appData.profiles.filter(p => p.id !== activeProfile.id);
-            if(others.length === 0) opt.innerHTML = '<p class="text-xs text-center text-slate-400 italic">No hay otros perfiles.</p>';
-            else others.forEach(p => {
-                const btn = document.createElement('button'); btn.textContent = `Desde "${p.name}"`; btn.className = 'w-full py-4 rounded-2xl bg-slate-50 dark:bg-slate-800 font-extrabold text-xs dark:text-white uppercase';
-                btn.onclick = () => { p.shifts.forEach(s => activeProfile.shifts.push({...s, id: crypto.randomUUID()})); saveToLocalStorage(); refreshAllUI(); document.getElementById('importShiftModal').classList.add('hidden'); }; opt.appendChild(btn);
-            });
-            modal.classList.remove('hidden'); modal.classList.add('flex');
-        }
-        function closeImportModal(e) { if(e.target.id === 'importShiftModal') { document.getElementById('importShiftModal').classList.add('hidden'); } }
+        function toggleProfileDragMode(en) { document.getElementById('profile-list').classList.toggle('drag-enabled', en); }
+        function toggleShiftDragMode(en) { document.getElementById('shift-list').classList.toggle('drag-enabled', en); }
 
         function navigateMonth(dir) { currentDisplayMonth += dir; if(currentDisplayMonth<0){currentDisplayMonth=11;currentDisplayYear--} else if(currentDisplayMonth>11){currentDisplayMonth=0;currentDisplayYear++} renderCurrentCalendar(); }
         function jumpToDate() { currentDisplayMonth = parseInt(document.getElementById('displayMonth').value); currentDisplayYear = parseInt(document.getElementById('displayYear').value); renderCurrentCalendar(); }
@@ -701,507 +516,295 @@
         
         function updateCountdown() {
             const ref = new Date(activeProfile.referenceDate); const today = new Date(); today.setHours(0,0,0,0); const cycle = activeProfile.workDays + activeProfile.restDays;
-            for(let i=0; i<90; i++) { const d = new Date(today); d.setDate(today.getDate()+i); const diff = Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), ref.getUTCDate()))/864e5);
-                if(((diff % cycle)+cycle)%cycle < activeProfile.restDays) { document.getElementById('countdown-container').textContent = i===0 ? 'Hoy descansas' : (i===1 ? 'Mañana libre' : `${i} días para descansar`); break; }
+            for(let i=0; i<90; i++) {
+                const d = new Date(today); d.setDate(today.getDate()+i);
+                const diff = Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), ref.getUTCDate()))/864e5);
+                if(((diff % cycle)+cycle)%cycle < activeProfile.restDays) { document.getElementById('countdown-container').textContent = i===0 ? 'Hoy libre' : (i===1 ? 'Mañana libre' : `${i} días para libre`); break; }
             }
         }
 
-
-        // ══════════════════════════════════════════════════════
-        // FERIADOS CHILE
-        // ══════════════════════════════════════════════════════
-        function getChileanHolidays(year) {
-            const a = year%19, b = Math.floor(year/100), c = year%100;
-            const d = Math.floor(b/4), e = b%4, f = Math.floor((b+8)/25);
-            const g = Math.floor((b-f+1)/3), h = (19*a+b-d-g+15)%30;
-            const i = Math.floor(c/4), k = c%4, l = (32+2*e+2*i-h-k)%7;
-            const m = Math.floor((a+11*h+22*l)/451);
-            const easterMonth = Math.floor((h+l-7*m+114)/31)-1;
-            const easterDay = ((h+l-7*m+114)%31)+1;
-            const easter = new Date(year, easterMonth, easterDay);
-            const gf = new Date(easter); gf.setDate(easter.getDate()-2);
-            const hs = new Date(easter); hs.setDate(easter.getDate()-1);
-            const holidays = new Set();
-            const add = d => holidays.add(d.toISOString().slice(0,10));
-            add(new Date(year,0,1)); add(new Date(year,4,1)); add(new Date(year,4,21));
-            add(new Date(year,5,29)); add(new Date(year,6,16)); add(new Date(year,7,15));
-            add(new Date(year,8,18)); add(new Date(year,8,19)); add(new Date(year,9,12));
-            add(new Date(year,9,31)); add(new Date(year,10,1)); add(new Date(year,11,8));
-            add(new Date(year,11,25)); add(gf); add(hs);
+        // --- FERIADOS Y VACACIONES ---
+        function getChileanHolidays(y) {
+            const holidays = new Set(); const add = d => holidays.add(d.toISOString().slice(0,10));
+            add(new Date(y,0,1)); add(new Date(y,4,1)); add(new Date(y,4,21)); add(new Date(y,5,29)); add(new Date(y,6,16)); add(new Date(y,7,15)); add(new Date(y,8,18)); add(new Date(y,8,19)); add(new Date(y,9,12)); add(new Date(y,9,31)); add(new Date(y,10,1)); add(new Date(y,11,8)); add(new Date(y,11,25));
             return holidays;
         }
 
-        // ══════════════════════════════════════════════════════
-        // RECONSTRUIR RECORDS DESDE VACATION DAYS (compatibilidad)
-        // ══════════════════════════════════════════════════════
-        function reconstruirVacationRecords(perfil) {
-            if (!perfil.vacationDays) perfil.vacationDays = {};
-            if (!perfil.vacationRecords) perfil.vacationRecords = [];
-            ['v15','v6'].forEach(typeKey => {
-                if (perfil.vacationRecords.find(r => r.type === typeKey)) return;
-                const dias = Object.keys(perfil.vacationDays).filter(d => perfil.vacationDays[d] === typeKey).sort();
-                if (dias.length === 0) return;
-                const lastDay = new Date(dias[dias.length-1]+'T00:00:00');
-                const returnDay = new Date(lastDay); returnDay.setDate(lastDay.getDate()+1);
-                perfil.vacationRecords.push({
-                    type: typeKey,
-                    typeName: typeKey==='v15' ? '15 Días Hábiles' : '6 Días Adicionales',
-                    startDate: dias[0],
-                    returnDate: returnDay.toISOString().slice(0,10),
-                    days: dias
-                });
-            });
-        }
-
-        // ══════════════════════════════════════════════════════
-        // PANEL VACACIONES — lógica
-        // ══════════════════════════════════════════════════════
-        let vacationTypeSheet = '15';
-        let lastVacResult = null;
-
-        function selectVacationTypeSheet(type) {
-            vacationTypeSheet = type;
-            const btn15 = document.getElementById('vac-sheet-btn-15');
-            const btn6  = document.getElementById('vac-sheet-btn-6');
-            const desc  = document.getElementById('vac-sheet-desc');
-            const box   = document.getElementById('vac-sheet-desc-box');
-            const hint  = document.getElementById('vac-days-hint');
-            const days  = document.getElementById('vac-sheet-days');
-            if (type === '15') {
-                btn15.className = 'py-4 rounded-2xl font-extrabold text-[11px] uppercase border-2 border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 transition-all';
-                btn6.className  = 'py-4 rounded-2xl font-extrabold text-[11px] uppercase border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 transition-all';
-                box.className   = 'mb-5 p-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900';
-                desc.innerHTML  = '<strong>Lunes a sábado</strong> cuentan como días hábiles.<br><strong>Domingos y feriados chilenos</strong> no cuentan.<br>Los <strong>días libres del ciclo sí se consumen</strong> como vacaciones.';
-                desc.className  = 'text-[10px] text-amber-700 dark:text-amber-300 leading-relaxed';
-                if (hint) { hint.textContent = 'Legal: 15 días'; hint.className = 'text-[9px] text-amber-500 font-bold mt-1 text-center'; }
-                if (days && parseInt(days.value) === 6) days.value = 15;
-            } else {
-                btn6.className  = 'py-4 rounded-2xl font-extrabold text-[11px] uppercase border-2 border-violet-400 bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 transition-all';
-                btn15.className = 'py-4 rounded-2xl font-extrabold text-[11px] uppercase border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 transition-all';
-                box.className   = 'mb-5 p-3 rounded-2xl bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-900';
-                desc.innerHTML  = '<strong>Días corridos</strong> desde la fecha de inicio.<br><strong>Todo cuenta</strong>: sábados, domingos, días libres del ciclo.<br>Solo se saltan los <strong>feriados chilenos</strong>.';
-                desc.className  = 'text-[10px] text-violet-700 dark:text-violet-300 leading-relaxed';
-                if (hint) { hint.textContent = 'Legal: 6 días adicionales'; hint.className = 'text-[9px] text-violet-500 font-bold mt-1 text-center'; }
-                if (days && parseInt(days.value) === 15) days.value = 6;
-            }
-            document.getElementById('vac-sheet-result').classList.add('hidden');
-        }
-
-        function ajustarDias(delta) {
-            const el = document.getElementById('vac-sheet-days');
-            el.value = Math.max(1, (parseInt(el.value) || 1) + delta);
-        }
-
-        function validarDias(el) { if (!el.value || el.value < 1) el.value = 1; }
-
+        function selectVacationTypeSheet(t) { vacationTypeSheet = t; document.getElementById('vac-sheet-desc').textContent = t==='15' ? "Lun a Sáb (sin feriados ni domingos)" : "Días corridos (sin feriados)"; }
         function calcularVacaciones() {
-            const startStr = document.getElementById('vac-sheet-start').value;
-            const dias     = parseInt(document.getElementById('vac-sheet-days').value) || 0;
-            if (!startStr) { showToast('Selecciona una fecha de inicio', 'error'); return; }
-            if (dias < 1)  { showToast('Ingresa al menos 1 día', 'error'); return; }
-
-            const startDate = new Date(startStr + 'T00:00:00');
-            const typeKey   = vacationTypeSheet === '15' ? 'v15' : 'v6';
-            const typeName  = vacationTypeSheet === '15'
-                ? (dias === 15 ? '15 Días Hábiles' : `${dias} Días Hábiles`)
-                : (dias === 6  ? '6 Días Adicionales' : `${dias} Días Adicionales`);
-
-            let counted = 0, current = new Date(startDate);
-            const vacDates = [];
-
-            while (counted < dias) {
-                const dateStr = current.toISOString().slice(0, 10);
-                const dow = current.getDay();
-                const holidays = getChileanHolidays(current.getFullYear());
-                if (vacationTypeSheet === '15') {
-                    if (dow === 0 || dow === 6) { current.setDate(current.getDate()+1); continue; }
-                    if (holidays.has(dateStr))  { current.setDate(current.getDate()+1); continue; }
-                }
-                vacDates.push(dateStr);
-                counted++;
+            const startStr = document.getElementById('vac-sheet-start').value; const dias = parseInt(document.getElementById('vac-sheet-days').value); if(!startStr || !dias) return;
+            let current = new Date(startStr + "T00:00:00"); const vacDates = []; let counted = 0;
+            while(counted < dias) {
+                const dStr = current.toISOString().slice(0,10); const hols = getChileanHolidays(current.getFullYear());
+                if(vacationTypeSheet === '15') { if(current.getDay()!==0 && !hols.has(dStr)) { vacDates.push(dStr); counted++; } }
+                else { if(!hols.has(dStr)) { vacDates.push(dStr); counted++; } }
                 current.setDate(current.getDate()+1);
             }
-
-            // Guardar días individuales
-            if (!activeProfile.vacationDays) activeProfile.vacationDays = {};
-            for (const k in activeProfile.vacationDays)
-                if (activeProfile.vacationDays[k] === typeKey) delete activeProfile.vacationDays[k];
-            vacDates.forEach(d => { activeProfile.vacationDays[d] = typeKey; });
-
-            // Guardar registro
-            if (!activeProfile.vacationRecords) activeProfile.vacationRecords = [];
-            activeProfile.vacationRecords = activeProfile.vacationRecords.filter(r => r.type !== typeKey);
-            const lastDay   = new Date(vacDates[vacDates.length-1]+'T00:00:00');
-            const returnDay = new Date(lastDay); returnDay.setDate(lastDay.getDate()+1);
-            const returnStr = returnDay.toISOString().slice(0,10);
-            activeProfile.vacationRecords.push({ type: typeKey, typeName, startDate: startStr, returnDate: returnStr, days: vacDates });
-
-            // Guardar datos para Google Calendar
-            lastVacResult = {
-                startStr, endStr: returnStr,
-                title: `🏖️ Vacaciones — ${activeProfile.name}`,
-                desc:  `${dias} días (${typeName}) — Regreso: ${returnDay.toLocaleDateString('es-CL', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}.`
-            };
-
-            saveToLocalStorage();
-            renderCurrentCalendar();
-            renderVacHistory();
-
-            document.getElementById('vac-sheet-return-date').textContent = returnDay.toLocaleDateString('es-CL', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
-            document.getElementById('vac-sheet-summary').textContent = `${dias} días desde el ${startDate.toLocaleDateString('es-CL', {day:'numeric', month:'long'})}`;
+            if(!activeProfile.vacationDays) activeProfile.vacationDays = {};
+            vacDates.forEach(d => activeProfile.vacationDays[d] = vacationTypeSheet==='15'?'v15':'v6');
+            const returnDay = new Date(vacDates[vacDates.length-1]+"T00:00:00"); returnDay.setDate(returnDay.getDate()+1);
             document.getElementById('vac-sheet-result').classList.remove('hidden');
-            showToast('✅ Vacaciones calculadas');
+            document.getElementById('vac-sheet-return-date').textContent = `Regreso: ${returnDay.toLocaleDateString()}`;
+            saveToLocalStorage(); refreshAllUI();
+            enviarTelemetria("Calculó Vacaciones");
         }
 
-        function agregarVacacionesGoogleCalendar() {
-            if (!lastVacResult) return;
-            const { startStr, endStr, title, desc } = lastVacResult;
-            window.open(`https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startStr.replace(/-/g,'')}/${endStr.replace(/-/g,'')}&details=${encodeURIComponent(desc)}&trp=false`, '_blank');
-        }
-
-        function abrirGCalDesdeHistorial(startDate, returnDate, typeName, dias) {
-            const title = `🏖️ Vacaciones — ${activeProfile.name}`;
-            const desc  = `${dias} días (${typeName}) — Regreso: ${new Date(returnDate+'T00:00:00').toLocaleDateString('es-CL', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}.`;
-            window.open(`https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startDate.replace(/-/g,'')}/${returnDate.replace(/-/g,'')}&details=${encodeURIComponent(desc)}&trp=false`, '_blank');
-        }
-
-        function eliminarVacaciones(typeKey) {
-            if (!confirm('⚠️ ¿Eliminar este período de vacaciones?')) return;
-            activeProfile.vacationRecords = (activeProfile.vacationRecords||[]).filter(r => r.type !== typeKey);
-            for (const k in activeProfile.vacationDays)
-                if (activeProfile.vacationDays[k] === typeKey) delete activeProfile.vacationDays[k];
-            saveToLocalStorage();
-            renderCurrentCalendar();
-            renderVacHistory();
-            showToast('Vacaciones eliminadas');
-        }
-
-        function renderVacHistory() {
-            const list = document.getElementById('vac-history-list');
-            if (!list) return;
-            const records = activeProfile.vacationRecords || [];
-            if (records.length === 0) {
-                list.innerHTML = `<div class="flex flex-col items-center py-8 text-center"><div class="text-4xl mb-3">🌴</div><p class="text-xs font-bold text-slate-400">Sin vacaciones registradas</p><p class="text-[10px] text-slate-300 dark:text-slate-600 mt-1">Calcula tus vacaciones arriba</p></div>`;
-                return;
-            }
-            list.innerHTML = records.map(r => {
-                const is15      = r.type === 'v15';
-                const gradFrom  = is15 ? '#f59e0b' : '#8b5cf6';
-                const gradTo    = is15 ? '#fbbf24' : '#a78bfa';
-                const dias      = r.days ? r.days.length : (is15 ? 15 : 6);
-                const startFmt  = new Date(r.startDate+'T00:00:00').toLocaleDateString('es-CL', {weekday:'short', day:'numeric', month:'long'});
-                const returnFmt = new Date(r.returnDate+'T00:00:00').toLocaleDateString('es-CL', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
-                return `
-                <div class="rounded-3xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800">
-                    <div style="background:linear-gradient(135deg,${gradFrom},${gradTo})" class="p-4 flex items-center justify-between">
-                        <div>
-                            <p class="text-[9px] font-extrabold text-white/70 uppercase tracking-widest">${r.typeName}</p>
-                            <p class="text-xl font-extrabold text-white">${dias} días</p>
-                        </div>
-                        <div class="text-3xl">🏖️</div>
-                    </div>
-                    <div class="p-4 bg-white dark:bg-slate-800 space-y-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:${is15?'#fffbeb':'#f5f3ff'}">
-                                <svg class="w-4 h-4" style="color:${gradFrom}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            </div>
-                            <div>
-                                <p class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Inicio</p>
-                                <p class="text-xs font-extrabold text-slate-700 dark:text-slate-200 capitalize">${startFmt}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/30">
-                                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            </div>
-                            <div>
-                                <p class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Regreso</p>
-                                <p class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 capitalize">${returnFmt}</p>
-                            </div>
-                        </div>
-                        <button onclick="abrirGCalDesdeHistorial('${r.startDate}','${r.returnDate}','${r.typeName}',${dias})"
-                            class="w-full py-2.5 rounded-2xl text-[10px] font-extrabold uppercase text-blue-600 border border-blue-100 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/20 active:scale-95 transition-transform">
-                            📅 Agregar a Google Calendar
-                        </button>
-                        <button onclick="eliminarVacaciones('${r.type}')"
-                            class="w-full py-2.5 rounded-2xl text-[10px] font-extrabold uppercase text-rose-500 border border-rose-100 dark:border-rose-900 bg-rose-50 dark:bg-rose-900/20 active:scale-95 transition-transform">
-                            🗑️ Eliminar este período
-                        </button>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-
-        // ══════════════════════════════════════════════════════
-        // TUTORIAL SPOTLIGHT
-        // ══════════════════════════════════════════════════════
+        // --- TUTORIAL ---
+        let tutorialStep = 0;
         const TUTORIAL_STEPS = [
             {
                 target: 'current-user-name',
-                title: '👤 Perfil activo',
-                body: 'Aquí ves el nombre del perfil que estás usando. Cada persona puede tener su propio perfil con su ciclo de turnos independiente.',
-                position: 'bottom'
+                panel: null,
+                title: '👤 Perfiles de Usuario',
+                body: 'Aquí aparece el nombre del perfil activo. Si la app la usan varias personas, cada una tiene su propio calendario. Toca su nombre para cambiar de perfil.'
+            },
+            {
+                target: 'calendar-wrapper',
+                panel: null,
+                title: '📅 El Calendario',
+                body: 'Cada cuadro es un día. Los colores muestran si trabajas o descansas según tu ciclo. Toca un día UNA vez para seleccionarlo, DOS veces para abrir el detalle y asignar turno o agregar una nota.'
             },
             {
                 target: 'countdown-container',
-                title: '⏳ Cuenta regresiva',
-                body: 'Te indica cuántos días faltan para tu próximo descanso, o si hoy o mañana es tu día libre según tu ciclo.',
-                position: 'bottom'
+                panel: null,
+                title: '⏳ Contador de Descanso',
+                body: 'Te dice cuántos días faltan para tu próximo día libre según tu ciclo. Se actualiza automáticamente cada día.'
             },
             {
-                target: 'calendar-wrapper',
-                title: '📅 Calendario de turnos',
-                body: 'El corazón de la app. Los días libres se muestran con el color que elijas. Los días con turno asignado aparecen en el color del turno. Toca un día una vez para seleccionarlo y dos veces para abrirlo y asignarle un turno o una nota.',
-                position: 'top'
+                target: 'profile-list',
+                panel: 'sheet-profiles',
+                title: '👥 Panel de Perfiles',
+                body: 'Aquí creas y gestionas los perfiles. Cada uno guarda su propio ciclo, turnos y vacaciones de forma independiente. Activa "Ordenar" para cambiar el orden arrastrando.'
             },
             {
-                navTarget: 'sheet-profiles',
-                navIcon: 'Perfiles',
-                title: '👥 Perfiles',
-                body: 'Crea un perfil por cada persona. Cada perfil tiene su propio ciclo, turnos y vacaciones. Toca el nombre de un perfil para activarlo. Usa el ≡ para reordenarlos.',
-                position: 'top'
+                target: 'workDays',
+                panel: 'sheet-cycle',
+                title: '🔄 Ciclo de Trabajo',
+                body: 'Configura tu patrón repetitivo. Ejemplo: 6 días de trabajo y 2 libres. Ingresa una fecha de referencia y la app calculará automáticamente todos tus días en el calendario.'
             },
             {
-                navTarget: 'sheet-cycle',
-                navIcon: 'Ciclo',
-                title: '🔄 Ciclo de trabajo',
-                body: 'Define tu patrón de trabajo. Ingresa una fecha de referencia (un día que sabes que trabajaste o descansaste), cuántos días trabajas seguidos y cuántos días libres tienes. La app calcula automáticamente todo el calendario.',
-                position: 'top'
+                target: 'shift-list',
+                panel: 'sheet-shifts',
+                title: '⏰ Gestión de Turnos',
+                body: 'Crea los turnos que manejas con su nombre y color. Ejemplo: "Noche 22:00-06:00" en azul. Luego al tocar un día en el calendario puedes asignarle cualquiera de estos turnos.'
             },
             {
-                navTarget: 'sheet-shifts',
-                navIcon: 'Turnos',
-                title: '🕐 Gestión de turnos',
-                body: 'Crea los turnos que trabajas, por ejemplo "08:00–16:00" con su color. Luego puedes asignarlos a días específicos tocando dos veces en el calendario. Puedes importar los turnos de otro perfil.',
-                position: 'top'
-            },
-            {
-                navTarget: 'sheet-vacaciones',
-                navIcon: 'Vacac.',
+                target: 'vac-sheet-days',
+                panel: 'sheet-vacaciones',
                 title: '🏖️ Vacaciones',
-                body: 'Calcula tus vacaciones legales (15 días hábiles: lunes a sábado, sin feriados ni domingos) o días adicionales (corridos, sin feriados). Elige la cantidad de días, la fecha de inicio y la app te dice cuándo regresas. Puedes agregar el evento a Google Calendar.',
-                position: 'top'
+                body: 'Calcula tus días de vacaciones. Elige entre Días Hábiles (lunes a sábado sin feriados) o Días Adicionales. Ingresa fecha de inicio y cantidad de días — la app marca esos días en el calendario.'
             },
             {
-                navTarget: 'sheet-data',
-                navIcon: 'Datos',
-                title: '💾 Opciones de datos',
-                body: 'Aquí puedes hacer una copia de seguridad en JSON para no perder tus datos, restaurar una copia anterior, exportar el mes actual a Excel o PDF, y volver a ver este tutorial cuando quieras.',
-                position: 'top'
-            },
-            {
-                target: 'calendar-wrapper',
-                title: '✅ ¡Listo para usar!',
-                body: 'Ya conoces todo lo que necesitas. Empieza creando tu perfil, configura tu ciclo de trabajo y asigna tus turnos. ¡Que tengas buenos turnos! 🙌',
-                position: 'top',
-                isLast: true
+                target: 'pdf-export-btn',
+                panel: 'sheet-data',
+                title: '💾 Datos y Exportación',
+                body: 'Guarda un respaldo JSON, exporta a Excel o genera un PDF para imprimir o compartir. Se recomienda hacer backup periódico para no perder tu información.'
             }
         ];
 
-        let tutorialStep = 0;
-
         function iniciarTutorial() {
-            closeAllSheets();
             tutorialStep = 0;
+            closeAllSheets();
+            document.getElementById('tutorial-overlay').classList.remove('hidden');
             mostrarPaso();
-        }
-
-        function verTutorialDesdeBanner() {
-            document.getElementById('tutorial-banner').classList.add('hidden');
-            iniciarTutorial();
-        }
-
-        function descartarBanner() {
-            localStorage.setItem('tutorial_descartado', '1');
-            const banner = document.getElementById('tutorial-banner');
-            banner.style.transition = 'opacity 0.3s';
-            banner.style.opacity = '0';
-            setTimeout(() => banner.classList.add('hidden'), 300);
         }
 
         function mostrarPaso() {
-            const step = TUTORIAL_STEPS[tutorialStep];
-            const overlay   = document.getElementById('tutorial-overlay');
-            const spotlight = document.getElementById('tutorial-spotlight');
-            const tooltip   = document.getElementById('tutorial-tooltip');
+            const s = TUTORIAL_STEPS[tutorialStep];
 
-            overlay.classList.remove('hidden');
-            spotlight.classList.remove('hidden');
-            tooltip.classList.remove('hidden');
+            document.getElementById('tutorial-title').textContent = s.title;
+            document.getElementById('tutorial-body').textContent = s.body;
+            document.getElementById('tutorial-step-counter').textContent = `${tutorialStep + 1} / ${TUTORIAL_STEPS.length}`;
+            document.getElementById('tutorial-progress').style.width = `${((tutorialStep + 1) / TUTORIAL_STEPS.length) * 100}%`;
 
-            // Si el paso apunta a un botón de nav, ábrelo primero
-            if (step.navTarget) {
-                // Abrir el panel correspondiente sin cerrar el tutorial
-                document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open'));
-                document.getElementById(step.navTarget).classList.add('open');
-                // Pequeño delay para que el panel aparezca antes de calcular posición
-                setTimeout(() => posicionarPaso(step), 420);
+            if (s.panel) {
+                closeAllSheets();
+                setTimeout(() => {
+                    openSheet(s.panel);
+                    setTimeout(() => resaltarElemento(s), 420);
+                }, 100);
             } else {
-                // Cerrar paneles si el paso apunta a un elemento de la pantalla principal
-                document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open'));
-                setTimeout(() => posicionarPaso(step), 50);
+                closeAllSheets();
+                setTimeout(() => resaltarElemento(s), 100);
             }
         }
 
-        function posicionarPaso(step) {
-            const spotlight = document.getElementById('tutorial-spotlight');
+        function resaltarElemento(s) {
+            const el = document.getElementById(s.target);
+            if (!el) return;
+            const rect = el.getBoundingClientRect();
+            const spot = document.getElementById('tutorial-spotlight');
+            spot.style.left   = (rect.left - 6) + 'px';
+            spot.style.top    = (rect.top - 6) + 'px';
+            spot.style.width  = (rect.width + 12) + 'px';
+            spot.style.height = (rect.height + 12) + 'px';
+            spot.style.display = 'block';
 
-            // Determinar elemento a resaltar con el spotlight
-            let el = null;
-            if (step.target) {
-                el = document.getElementById(step.target);
-            } else if (step.navTarget) {
-                el = document.getElementById(step.navTarget);
-            }
+            // Posicionar el cuadro de texto para que NO tape el elemento
+            const box = document.getElementById('tutorial-box');
+            const screenH = window.innerHeight;
+            const elCenter = rect.top + rect.height / 2;
 
-            // Posicionar spotlight sobre el elemento
-            if (el) {
-                const rect = el.getBoundingClientRect();
-                const pad  = 6;
-                // Limitar el spotlight al área visible, no tapar el tooltip de abajo
-                const maxH = window.innerHeight * 0.55;
-                spotlight.style.left   = Math.max(4, rect.left - pad) + 'px';
-                spotlight.style.top    = Math.max(4, rect.top - pad) + 'px';
-                spotlight.style.width  = Math.min(rect.width + pad*2, window.innerWidth - 8) + 'px';
-                spotlight.style.height = Math.min(rect.height + pad*2, maxH) + 'px';
-                spotlight.style.display = 'block';
+            if (elCenter > screenH / 2) {
+                // Elemento en mitad inferior → cuadro arriba
+                box.style.top    = '5%';
+                box.style.bottom = 'auto';
             } else {
-                spotlight.style.display = 'none';
+                // Elemento en mitad superior → cuadro abajo
+                box.style.bottom = '5%';
+                box.style.top    = 'auto';
             }
 
-            // Contenido del tooltip
-            document.getElementById('tutorial-step-label').textContent = `Paso ${tutorialStep + 1} de ${TUTORIAL_STEPS.length}`;
-            document.getElementById('tutorial-title').textContent  = TUTORIAL_STEPS[tutorialStep].title;
-            document.getElementById('tutorial-body').textContent   = TUTORIAL_STEPS[tutorialStep].body;
-
-            // Botones nav
-            const prevBtn = document.getElementById('tutorial-prev');
-            const nextBtn = document.getElementById('tutorial-next');
-            prevBtn.style.opacity = tutorialStep === 0 ? '0' : '1';
-            prevBtn.style.pointerEvents = tutorialStep === 0 ? 'none' : 'auto';
-
-            if (TUTORIAL_STEPS[tutorialStep].isLast) {
-                nextBtn.textContent = '¡Entendido! ✓';
-                nextBtn.style.background = '#10b981';
-            } else {
-                nextBtn.textContent = 'Siguiente →';
-                nextBtn.style.background = '';
-            }
-
-            // Dots
-            const dotsEl = document.getElementById('tutorial-dots');
-            dotsEl.innerHTML = TUTORIAL_STEPS.map((_, i) =>
-                `<div style="border-radius:9999px;transition:all 0.2s;width:${i===tutorialStep?'16px':'8px'};height:8px;background:${i===tutorialStep?'#6366f1':'#cbd5e1'}"></div>`
-            ).join('');
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         function tutorialNext() {
-            if (tutorialStep >= TUTORIAL_STEPS.length - 1) {
+            if (tutorialStep < TUTORIAL_STEPS.length - 1) {
+                tutorialStep++;
+                mostrarPaso();
+            } else {
                 cerrarTutorial();
-                return;
             }
-            tutorialStep++;
-            mostrarPaso();
-        }
-
-        function tutorialPrev() {
-            if (tutorialStep <= 0) return;
-            tutorialStep--;
-            mostrarPaso();
         }
 
         function cerrarTutorial() {
-            // Ocultar todos los elementos del tutorial
-            const overlay   = document.getElementById('tutorial-overlay');
-            const spotlight = document.getElementById('tutorial-spotlight');
-            const tooltip   = document.getElementById('tutorial-tooltip');
+            closeAllSheets();
+            document.getElementById('tutorial-overlay').classList.add('hidden');
+            document.getElementById('tutorial-spotlight').style.display = 'none';
+        }
 
-            overlay.classList.add('hidden');
-            tooltip.classList.add('hidden');
-
-            // Limpiar spotlight completamente — tamaño y posición a cero
-            spotlight.classList.add('hidden');
-            spotlight.style.left   = '0px';
-            spotlight.style.top    = '0px';
-            spotlight.style.width  = '0px';
-            spotlight.style.height = '0px';
-            spotlight.style.display = 'none';
-
-            // Cerrar cualquier panel que se haya abierto durante el tutorial
-            document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open'));
-            document.getElementById('overlay').classList.add('hidden');
-
-            // Limpiar nav items
-            document.querySelectorAll('.nav-item').forEach(btn => {
-                btn.classList.add('text-slate-400');
-                btn.classList.remove('text-indigo-600', 'dark:text-indigo-400');
-            });
-            const hoyBtn = document.querySelector('.nav-item[onclick="closeAllSheets()"]');
-            if (hoyBtn) {
-                hoyBtn.classList.remove('text-slate-400');
-                hoyBtn.classList.add('text-indigo-600', 'dark:text-indigo-400');
-            }
+        function toggleAbout(show) {
+            const m = document.getElementById('about-modal');
+            if (show) { m.classList.remove('hidden'); m.classList.add('flex'); }
+            else       { m.classList.add('hidden');    m.classList.remove('flex'); }
         }
 
         window.onload = () => {
             const today = new Date(); currentDisplayYear = today.getFullYear(); currentDisplayMonth = today.getMonth();
-            monthNames.forEach((m, i) => document.getElementById('displayMonth').add(new Option(m, i)));
-            for(let i=-5; i<=5; i++) document.getElementById('displayYear').add(new Option(currentDisplayYear+i, currentDisplayYear+i));
-            loadFromLocalStorage(); 
-            refreshAllUI();
-            
-            // LLAMADA AL MONITOR
-            enviarTelemetria(); 
-
-            // Mostrar banner tutorial si nunca fue descartado
-            if (!localStorage.getItem('tutorial_descartado')) {
-                document.getElementById('tutorial-banner').classList.remove('hidden');
-            }
+            monthNames.forEach((m,i) => document.getElementById('displayMonth').add(new Option(m,i)));
+            for(let i=-2; i<=5; i++) document.getElementById('displayYear').add(new Option(currentDisplayYear+i, currentDisplayYear+i));
+            loadFromLocalStorage(); refreshAllUI(); enviarTelemetria("Entró a la App");
         };
     </script>
 
-    <!-- ══════════════════════════════════════════════════ -->
-    <!-- TUTORIAL SPOTLIGHT                                 -->
-    <!-- ══════════════════════════════════════════════════ -->
-    <!-- Overlay oscuro con agujero luminoso -->
-    <div id="tutorial-overlay" class="hidden fixed inset-0 z-[300]" style="background:rgba(2,6,23,0.85);backdrop-filter:blur(2px)"></div>
+    <!-- MODAL: ACERCA DE -->
+    <div id="about-modal" class="hidden fixed inset-0 z-[300] bg-black/50 backdrop-blur-sm flex items-end justify-center">
+        <div class="bg-white dark:bg-slate-900 rounded-t-[2rem] w-full max-w-lg max-h-[88vh] flex flex-col shadow-2xl">
 
-    <!-- Recuadro spotlight (borde iluminado sobre el elemento) -->
-    <div id="tutorial-spotlight" class="hidden fixed z-[310] rounded-2xl pointer-events-none"
-        style="box-shadow:0 0 0 4px #6366f1, 0 0 0 8px rgba(99,102,241,0.3), 0 0 40px rgba(99,102,241,0.4); transition: all 0.4s cubic-bezier(0.33,1,0.68,1);">
-    </div>
+            <!-- Handle -->
+            <div class="w-10 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mt-4 flex-shrink-0"></div>
 
-    <!-- Tooltip explicativo — anclado abajo en móvil -->
-    <div id="tutorial-tooltip" class="hidden fixed z-[320] left-0 right-0 bottom-0 px-3 pb-6"
-        style="transition: transform 0.4s cubic-bezier(0.33,1,0.68,1);">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-indigo-100 dark:border-indigo-900">
-            <!-- Cabecera -->
-            <div class="p-4 bg-gradient-to-r from-indigo-500 to-violet-600">
-                <div class="flex items-center justify-between mb-1">
-                    <span id="tutorial-step-label" class="text-[9px] font-extrabold text-indigo-200 uppercase tracking-widest"></span>
-                    <button onclick="cerrarTutorial()" class="w-7 h-7 rounded-full bg-white/20 text-white text-xs font-bold flex items-center justify-center active:scale-90">✕</button>
+            <!-- Scrollable content -->
+            <div class="flex-1 overflow-y-auto px-6 pt-6 pb-4">
+
+                <!-- Marca -->
+                <div class="text-center mb-7">
+                    <div class="w-16 h-16 rounded-[1.25rem] bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-200 dark:shadow-indigo-900">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                    </div>
+                    <h2 class="text-xl font-black tracking-tight text-slate-900 dark:text-white">CarlosPN Interactive<sup class="text-xs font-bold">®</sup></h2>
+                    <p class="text-[11px] font-bold text-slate-400 tracking-[0.12em] uppercase mt-1">Desarrollo de Apps · 2026</p>
                 </div>
-                <p id="tutorial-title" class="text-base font-extrabold text-white leading-tight"></p>
+
+                <!-- Divisor -->
+                <div class="h-px bg-slate-100 dark:bg-slate-800 mb-6"></div>
+
+                <!-- Autor -->
+                <div class="flex items-center gap-4 mb-5">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0 shadow-md">
+                        <span class="text-2xl font-black text-white" style="font-family:'Plus Jakarta Sans',sans-serif">C</span>
+                    </div>
+                    <div>
+                        <p class="font-black text-slate-900 dark:text-white text-base">Carlos</p>
+                        <p class="text-xs font-bold text-indigo-500 mt-0.5">Croupier · Casino de Puerto Varas</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Colaborador desde 2013</p>
+                    </div>
+                </div>
+
+                <!-- Bio cards -->
+                <div class="space-y-3 mb-5">
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700">
+                        <p class="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">
+                            Colaborador del <strong class="text-slate-900 dark:text-white">Casino de Puerto Varas desde 2013</strong>. Su motivación siempre ha sido velar por las soluciones de sus colegas, facilitando el manejo de herramientas y aplicaciones que les sean verdaderamente útiles en su día a día.
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700">
+                        <p class="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">
+                            Apasionado por la <strong class="text-slate-900 dark:text-white">computación y la tecnología</strong>, lleva más de <strong class="text-slate-900 dark:text-white">5 años</strong> desarrollando aplicaciones con entusiasmo y dedicación, buscando siempre soluciones prácticas y modernas para su equipo.
+                        </p>
+                    </div>
+
+                    <!-- Historia de inspiración -->
+                    <div class="rounded-2xl overflow-hidden border border-amber-100 dark:border-amber-900/40">
+                        <div class="bg-gradient-to-r from-amber-400 to-orange-400 px-4 py-3 flex items-center gap-2">
+                            <span class="text-lg">💡</span>
+                            <span class="text-[11px] font-extrabold text-white uppercase tracking-widest">La historia detrás de esta app</span>
+                        </div>
+                        <div class="bg-amber-50 dark:bg-amber-950/30 p-4">
+                            <p class="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">
+                                La idea nació de una colega que un día le comentó que sería genial tener una app donde uno pudiera agendar sus propios turnos de trabajo de forma simple y visual. Esa chispa fue suficiente — a veces la mejor inspiración viene de quienes más conocen el problema.
+                            </p>
+                            <p class="text-[13px] leading-relaxed text-slate-500 dark:text-slate-400 mt-2">
+                                Así nació <strong class="text-slate-700 dark:text-slate-200">Turnos Pro</strong>: una app pensada por y para los trabajadores, donde cada uno puede llevar el control de su calendario laboral desde su propio celular.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- App card -->
+                <div class="rounded-2xl overflow-hidden mb-6">
+                    <div class="bg-gradient-to-r from-indigo-600 to-violet-700 p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg class="w-4 h-4 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span class="text-[11px] font-extrabold text-indigo-200 uppercase tracking-widest">Esta App</span>
+                        </div>
+                        <p class="text-[13px] text-white/80 leading-relaxed">
+                            Diseñada para gestionar y visualizar turnos de trabajo de forma clara, rápida e intuitiva — directamente desde el celular.
+                        </p>
+                    </div>
+                    <div class="bg-indigo-50 dark:bg-indigo-950 px-4 py-3 flex items-center gap-2">
+                        <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        <span class="text-[11px] text-indigo-400 font-bold">Turnos Pro · 2026</span>
+                    </div>
+                </div>
+
+                <!-- Firma -->
+                <div class="text-center pb-2">
+                    <p class="text-[11px] text-slate-300 dark:text-slate-600">Hecho con</p>
+                    <p class="text-sm text-slate-400 font-semibold mt-1">❤️ pasión &amp; ☕ café</p>
+                    <p class="text-[10px] text-slate-300 dark:text-slate-700 mt-2 italic">CarlosPN Interactive® — Todos los derechos reservados</p>
+                </div>
             </div>
-            <!-- Cuerpo con scroll si es largo -->
-            <div class="px-4 pt-3 pb-1 max-h-32 overflow-y-auto">
-                <p id="tutorial-body" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed"></p>
-            </div>
-            <!-- Navegación -->
-            <div class="px-4 py-3 flex items-center justify-between gap-2">
-                <button id="tutorial-prev" onclick="tutorialPrev()"
-                    class="flex-1 py-3 rounded-2xl text-[11px] font-extrabold uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 active:scale-95 transition-transform">
-                    ← Anterior
-                </button>
-                <div id="tutorial-dots" class="flex gap-1.5 shrink-0"></div>
-                <button id="tutorial-next" onclick="tutorialNext()"
-                    class="flex-1 py-3 rounded-2xl text-[11px] font-extrabold uppercase bg-indigo-600 text-white active:scale-95 transition-transform">
-                    Siguiente →
+
+            <!-- Botón cerrar -->
+            <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex-shrink-0" style="padding-bottom: calc(1rem + env(safe-area-inset-bottom))">
+                <button onclick="toggleAbout(false)" class="w-full py-4 rounded-2xl bg-indigo-600 text-white font-extrabold text-sm uppercase tracking-wide active:scale-95 transition-transform">
+                    Cerrar
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- TUTORIAL OVERLAY -->
+    <div id="tutorial-overlay" class="hidden fixed inset-0 z-[300] bg-black/75" style="pointer-events:none;">
+        <!-- Spotlight: resalta el elemento -->
+        <div id="tutorial-spotlight" class="fixed border-2 border-indigo-400 rounded-2xl shadow-[0_0_0_9999px_rgba(0,0,0,0.72),0_0_40px_rgba(99,102,241,0.6)]" style="display:none; pointer-events:none; transition: all 0.35s cubic-bezier(0.4,0,0.2,1);"></div>
+
+        <!-- Cuadro explicativo: se posiciona arriba o abajo según el elemento -->
+        <div id="tutorial-box" class="fixed left-4 right-4 bg-white dark:bg-slate-900 rounded-[1.5rem] p-6 shadow-2xl" style="pointer-events:all; bottom:5%; transition: top 0.3s ease, bottom 0.3s ease;">
+            <!-- Flecha indicadora apuntando al spotlight -->
+            <p id="tutorial-step-counter" class="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest mb-2">1 / 8</p>
+            <h3 id="tutorial-title" class="text-lg font-black mb-3 text-slate-900 dark:text-white"></h3>
+            <p id="tutorial-body" class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-5"></p>
+            <!-- Barra de progreso -->
+            <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full mb-5 overflow-hidden">
+                <div id="tutorial-progress" class="h-full bg-indigo-500 rounded-full transition-all duration-300" style="width:12.5%"></div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="cerrarTutorial()" style="pointer-events:all;" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold py-3.5 rounded-2xl text-xs uppercase active:scale-95 transition-transform">Saltar</button>
+                <button onclick="tutorialNext()" style="pointer-events:all;" class="flex-1 bg-indigo-600 text-white font-bold py-3.5 rounded-2xl text-xs uppercase active:scale-95 transition-transform">Entendido →</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
